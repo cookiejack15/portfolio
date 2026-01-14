@@ -243,6 +243,8 @@ const projects = [
   gsap.registerPlugin(ScrollTrigger);
 
   document.addEventListener('DOMContentLoaded', () => {
+    const isMobile = window.innerWidth <= 768;
+
     // Hero animations
     const tl = gsap.timeline({ defaults: { ease: 'power4.out' } });
 
@@ -275,70 +277,119 @@ const projects = [
     const wrapper = document.querySelector('.cards-stack-wrapper');
     const totalCards = cards.length;
 
-    // Set initial state
-    cards.forEach((card, i) => {
-      gsap.set(card, {
-        scale: 1 - (i * 0.05),
-        y: i * 20,
-        zIndex: totalCards - i,
-        opacity: i === 0 ? 1 : 0.6
+    if (isMobile) {
+      // Mobile: simple scroll without pinning
+      cards.forEach((card, i) => {
+        gsap.set(card, {
+          position: 'relative',
+          scale: 1,
+          y: 0,
+          zIndex: 1,
+          opacity: 1
+        });
       });
-    });
 
-    // Set first dot active
-    if (dots[0]) dots[0].classList.add('active');
+      // Hide progress dots on mobile
+      const progressDots = document.querySelector('.cards-progress');
+      if (progressDots) progressDots.style.display = 'none';
 
-    // Create scroll-triggered animation
-    ScrollTrigger.create({
-      trigger: wrapper,
-      start: 'top 20%',
-      end: `+=${totalCards * 100}%`,
-      pin: true,
-      scrub: 1,
-      onUpdate: (self) => {
-        const progress = self.progress;
-        const cardIndex = Math.min(Math.floor(progress * totalCards), totalCards - 1);
-
-        cards.forEach((card, i) => {
-          const cardProgress = progress * totalCards - i;
-
-          if (cardProgress >= 0 && cardProgress <= 1) {
-            // Card is being scrolled out
-            gsap.to(card, {
-              y: -cardProgress * 150,
-              scale: 1 - cardProgress * 0.1,
-              opacity: 1 - cardProgress * 0.5,
-              rotateX: cardProgress * 10,
-              duration: 0.1
-            });
-          } else if (cardProgress < 0) {
-            // Card is waiting
-            const waitIndex = -cardProgress;
-            gsap.to(card, {
-              y: waitIndex * 20,
-              scale: 1 - waitIndex * 0.05,
-              opacity: waitIndex < 1 ? 1 : 0.6,
-              rotateX: 0,
-              duration: 0.1
-            });
-          } else {
-            // Card has passed
-            gsap.to(card, {
-              y: -150,
-              scale: 0.9,
-              opacity: 0,
-              rotateX: 10,
-              duration: 0.1
-            });
+      // Simple fade in animation for each card
+      cards.forEach((card, i) => {
+        gsap.fromTo(card,
+          { opacity: 0, y: 60 },
+          {
+            opacity: 1,
+            y: 0,
+            duration: 0.8,
+            scrollTrigger: {
+              trigger: card,
+              start: 'top 85%',
+            }
           }
-        });
+        );
+      });
+    } else {
+      // Desktop: full stacked cards effect
 
-        // Update dots
-        dots.forEach((dot, i) => {
-          dot.classList.toggle('active', i === cardIndex);
+      // Set initial state - cards stacked with depth
+      cards.forEach((card, i) => {
+        gsap.set(card, {
+          scale: 1 - (i * 0.04),
+          y: i * 30,
+          zIndex: totalCards - i,
+          opacity: i === 0 ? 1 : 0.7,
+          rotateX: i * 2,
+          filter: i === 0 ? 'brightness(1)' : `brightness(${1 - i * 0.15})`
         });
-      }
-    });
+      });
+
+      // Set first dot active
+      if (dots[0]) dots[0].classList.add('active');
+
+      // Create scroll-triggered animation
+      ScrollTrigger.create({
+        trigger: wrapper,
+        start: 'top 15%',
+        end: `+=${totalCards * 120}%`,
+        pin: true,
+        scrub: 0.5,
+        onUpdate: (self) => {
+          const progress = self.progress;
+          const cardIndex = Math.min(Math.floor(progress * totalCards), totalCards - 1);
+
+          cards.forEach((card, i) => {
+            const cardProgress = progress * totalCards - i;
+
+            if (cardProgress >= 0 && cardProgress <= 1) {
+              // Card is being scrolled out - main animation
+              const ease = gsap.parseEase('power2.out');
+              const easedProgress = ease(cardProgress);
+
+              gsap.to(card, {
+                y: -easedProgress * 400,
+                scale: 1 - easedProgress * 0.15,
+                opacity: 1 - easedProgress * 0.8,
+                rotateX: easedProgress * 15,
+                filter: `brightness(${1 - easedProgress * 0.5})`,
+                pointerEvents: easedProgress > 0.5 ? 'none' : 'auto',
+                duration: 0.1
+              });
+            } else if (cardProgress < 0) {
+              // Card is waiting in the stack
+              const waitIndex = Math.abs(cardProgress);
+              const stackOffset = Math.min(waitIndex, 2);
+
+              gsap.to(card, {
+                y: stackOffset * 30,
+                scale: 1 - stackOffset * 0.04,
+                opacity: stackOffset < 0.5 ? 1 : 0.7,
+                rotateX: stackOffset * 2,
+                filter: stackOffset < 0.5 ? 'brightness(1)' : `brightness(${1 - stackOffset * 0.15})`,
+                pointerEvents: stackOffset < 0.5 ? 'auto' : 'none',
+                duration: 0.1
+              });
+            } else {
+              // Card has passed - completely gone
+              gsap.to(card, {
+                y: -500,
+                scale: 0.8,
+                opacity: 0,
+                rotateX: 20,
+                filter: 'brightness(0.3)',
+                pointerEvents: 'none',
+                duration: 0.1
+              });
+            }
+          });
+
+          // Update dots with smooth transition
+          dots.forEach((dot, i) => {
+            const isActive = i === cardIndex;
+            dot.classList.toggle('active', isActive);
+          });
+        }
+      });
+    }
 
     // Tech section
     gsap.fromTo('[data-animate="tech-title"]',
@@ -854,7 +905,7 @@ const projects = [
     }
 
     .dev-hero {
-      padding: 140px 0 80px;
+      padding: 140px 0 60px;
     }
 
     .hero-stats {
@@ -862,16 +913,52 @@ const projects = [
       gap: 32px;
     }
 
+    /* Mobile: disable stacked cards, use vertical layout */
+    .projects-section {
+      padding: 40px 0 80px;
+    }
+
     .cards-stack-wrapper {
-      min-height: 550px;
+      min-height: auto;
+      perspective: none;
     }
 
     .cards-stack {
-      height: 500px;
+      position: relative;
+      height: auto;
+      display: flex;
+      flex-direction: column;
+      gap: 24px;
     }
 
     .project-card {
+      position: relative !important;
+      transform: none !important;
+      opacity: 1 !important;
+      filter: none !important;
       padding: 24px;
+      grid-template-columns: 1fr;
+      gap: 20px;
+    }
+
+    .cards-progress {
+      display: none;
+    }
+
+    .card-image {
+      aspect-ratio: 16/9;
+    }
+
+    .card-title {
+      font-size: 24px;
+    }
+
+    .card-description {
+      font-size: 14px;
+    }
+
+    .card-highlights {
+      display: none;
     }
 
     .tech-grid {
