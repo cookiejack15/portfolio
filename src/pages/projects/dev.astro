@@ -310,6 +310,24 @@ const projects = [
       });
     } else {
       // Desktop: one card visible at a time with slide animation
+      const hero = document.querySelector('.dev-hero');
+
+      // Hero fade out when approaching cards
+      if (hero) {
+        ScrollTrigger.create({
+          trigger: '.projects-section',
+          start: 'top 80%',
+          end: 'top 20%',
+          scrub: true,
+          onUpdate: (self) => {
+            const progress = self.progress;
+            gsap.set(hero, {
+              opacity: 1 - progress,
+              y: -progress * 50
+            });
+          }
+        });
+      }
 
       // Set initial state - only first card visible
       cards.forEach((card, i) => {
