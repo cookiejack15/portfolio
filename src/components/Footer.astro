@@ -3,9 +3,9 @@ const base = import.meta.env.BASE_URL;
 const currentYear = new Date().getFullYear();
 
 const footerLinks = [
-  { name: "Projets", href: "#projects" },
-  { name: "A propos", href: "#about" },
-  { name: "Contact", href: "#contact" },
+  { name: "Projets", href: `${base}#projects` },
+  { name: "A propos", href: `${base}#about` },
+  { name: "Contact", href: `${base}#contact` },
 ];
 
 const socialLinks = [
@@ -31,7 +31,7 @@ const socialLinks = [
           <span class="title-line">Un projet</span>
           <span class="title-line">en tete ?</span>
         </h2>
-        <a href="#contact" class="footer-contact-btn magnetic-btn">
+        <a href={`${base}#contact`} class="footer-contact-btn magnetic-btn">
           <span>Discutons</span>
           <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
             <path d="M7 17L17 7M17 7H7M17 7V17"/>
