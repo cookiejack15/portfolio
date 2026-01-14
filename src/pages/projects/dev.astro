@@ -309,17 +309,16 @@ const projects = [
         );
       });
     } else {
-      // Desktop: full stacked cards effect
+      // Desktop: one card visible at a time with slide animation
 
-      // Set initial state - cards stacked with depth
+      // Set initial state - only first card visible
       cards.forEach((card, i) => {
         gsap.set(card, {
-          scale: 1 - (i * 0.04),
-          y: i * 30,
+          y: i === 0 ? 0 : 100,
           zIndex: totalCards - i,
-          opacity: i === 0 ? 1 : 0.7,
-          rotateX: i * 2,
-          filter: i === 0 ? 'brightness(1)' : `brightness(${1 - i * 0.15})`
+          opacity: i === 0 ? 1 : 0,
+          scale: 1,
+          pointerEvents: i === 0 ? 'auto' : 'none'
         });
       });
 
@@ -330,9 +329,9 @@ const projects = [
       ScrollTrigger.create({
         trigger: wrapper,
         start: 'top 15%',
-        end: `+=${totalCards * 120}%`,
+        end: `+=${totalCards * 100}%`,
         pin: true,
-        scrub: 0.5,
+        scrub: 0.3,
         onUpdate: (self) => {
           const progress = self.progress;
           const cardIndex = Math.min(Math.floor(progress * totalCards), totalCards - 1);
@@ -341,51 +340,48 @@ const projects = [
             const cardProgress = progress * totalCards - i;
 
             if (cardProgress >= 0 && cardProgress <= 1) {
-              // Card is being scrolled out - main animation
-              const ease = gsap.parseEase('power2.out');
-              const easedProgress = ease(cardProgress);
-
+              // Current card - sliding out
               gsap.to(card, {
-                y: -easedProgress * 400,
-                scale: 1 - easedProgress * 0.15,
-                opacity: 1 - easedProgress * 0.8,
-                rotateX: easedProgress * 15,
-                filter: `brightness(${1 - easedProgress * 0.5})`,
-                pointerEvents: easedProgress > 0.5 ? 'none' : 'auto',
+                y: -cardProgress * 120,
+                opacity: 1 - cardProgress,
+                scale: 1,
+                pointerEvents: cardProgress < 0.5 ? 'auto' : 'none',
                 duration: 0.1
               });
-            } else if (cardProgress < 0) {
-              // Card is waiting in the stack
-              const waitIndex = Math.abs(cardProgress);
-              const stackOffset = Math.min(waitIndex, 2);
-
+            } else if (cardProgress < 0 && cardProgress > -1) {
+              // Next card - sliding in
+              const enterProgress = 1 + cardProgress;
               gsap.to(card, {
-                y: stackOffset * 30,
-                scale: 1 - stackOffset * 0.04,
-                opacity: stackOffset < 0.5 ? 1 : 0.7,
-                rotateX: stackOffset * 2,
-                filter: stackOffset < 0.5 ? 'brightness(1)' : `brightness(${1 - stackOffset * 0.15})`,
-                pointerEvents: stackOffset < 0.5 ? 'auto' : 'none',
+                y: (1 - enterProgress) * 100,
+                opacity: enterProgress,
+                scale: 1,
+                pointerEvents: enterProgress > 0.5 ? 'auto' : 'none',
+                duration: 0.1
+              });
+            } else if (cardProgress <= -1) {
+              // Future cards - hidden below
+              gsap.to(card, {
+                y: 100,
+                opacity: 0,
+                scale: 1,
+                pointerEvents: 'none',
                 duration: 0.1
               });
             } else {
-              // Card has passed - completely gone
+              // Past cards - hidden above
               gsap.to(card, {
-                y: -500,
-                scale: 0.8,
+                y: -120,
                 opacity: 0,
-                rotateX: 20,
-                filter: 'brightness(0.3)',
+                scale: 1,
                 pointerEvents: 'none',
                 duration: 0.1
               });
             }
           });
 
-          // Update dots with smooth transition
+          // Update dots
           dots.forEach((dot, i) => {
-            const isActive = i === cardIndex;
-            dot.classList.toggle('active', isActive);
+            dot.classList.toggle('active', i === cardIndex);
           });
         }
       });
