@@ -1,0 +1,210 @@
+---
+// Logos des technologies - en couleur
+const technologies = [
+  { name: "React", icon: "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/react/react-original.svg" },
+  { name: "Node.js", icon: "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/nodejs/nodejs-original.svg" },
+  { name: "TypeScript", icon: "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/typescript/typescript-original.svg" },
+  { name: "PostgreSQL", icon: "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/postgresql/postgresql-original.svg" },
+  { name: "MongoDB", icon: "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/mongodb/mongodb-original.svg" },
+  { name: "HTML5", icon: "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/html5/html5-original.svg" },
+  { name: "CSS3", icon: "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/css3/css3-original.svg" },
+  { name: "JavaScript", icon: "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/javascript/javascript-original.svg" },
+  { name: "C#", icon: "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/csharp/csharp-original.svg" },
+  { name: "Python", icon: "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/python/python-original.svg" },
+  { name: "Bash", icon: "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/bash/bash-original.svg" },
+  { name: "GitHub", icon: "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/github/github-original.svg" },
+  { name: "Git", icon: "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/git/git-original.svg" },
+  { name: "Docker", icon: "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/docker/docker-original.svg" },
+  { name: "Linux", icon: "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/linux/linux-original.svg" },
+];
+---
+
+<section class="marquee-section">
+  <div class="marquee-container">
+    <!-- Gradient masks -->
+    <div class="marquee-mask marquee-mask-left"></div>
+    <div class="marquee-mask marquee-mask-right"></div>
+
+    <!-- First row - left to right -->
+    <div class="marquee-track marquee-track-1">
+      <div class="marquee-content">
+        {technologies.map((tech) => (
+          <div class="tech-item">
+            <img src={tech.icon} alt={tech.name} class="tech-icon" loading="lazy" />
+            <span class="tech-name">{tech.name}</span>
+          </div>
+        ))}
+        {technologies.map((tech) => (
+          <div class="tech-item">
+            <img src={tech.icon} alt={tech.name} class="tech-icon" loading="lazy" />
+            <span class="tech-name">{tech.name}</span>
+          </div>
+        ))}
+      </div>
+    </div>
+
+    <!-- Second row - right to left -->
+    <div class="marquee-track marquee-track-2">
+      <div class="marquee-content marquee-reverse">
+        {[...technologies].reverse().map((tech) => (
+          <div class="tech-item">
+            <img src={tech.icon} alt={tech.name} class="tech-icon" loading="lazy" />
+            <span class="tech-name">{tech.name}</span>
+          </div>
+        ))}
+        {[...technologies].reverse().map((tech) => (
+          <div class="tech-item">
+            <img src={tech.icon} alt={tech.name} class="tech-icon" loading="lazy" />
+            <span class="tech-name">{tech.name}</span>
+          </div>
+        ))}
+      </div>
+    </div>
+  </div>
+</section>
+
+<style>
+  .marquee-section {
+    padding: 80px 0;
+    overflow: hidden;
+    position: relative;
+    background: linear-gradient(
+      180deg,
+      var(--bg-primary) 0%,
+      var(--bg-secondary) 50%,
+      var(--bg-primary) 100%
+    );
+  }
+
+  .marquee-container {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+  }
+
+  /* Gradient masks for fade effect */
+  .marquee-mask {
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    width: 150px;
+    z-index: 10;
+    pointer-events: none;
+  }
+
+  .marquee-mask-left {
+    left: 0;
+    background: linear-gradient(90deg, var(--bg-primary), transparent);
+  }
+
+  .marquee-mask-right {
+    right: 0;
+    background: linear-gradient(-90deg, var(--bg-primary), transparent);
+  }
+
+  .marquee-track {
+    display: flex;
+    overflow: hidden;
+  }
+
+  .marquee-content {
+    display: flex;
+    gap: 48px;
+    padding: 16px 0;
+    animation: marquee 40s linear infinite;
+  }
+
+  .marquee-reverse {
+    animation: marquee-reverse 40s linear infinite;
+  }
+
+  @keyframes marquee {
+    0% {
+      transform: translateX(0);
+    }
+    100% {
+      transform: translateX(-50%);
+    }
+  }
+
+  @keyframes marquee-reverse {
+    0% {
+      transform: translateX(-50%);
+    }
+    100% {
+      transform: translateX(0);
+    }
+  }
+
+  .tech-item {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    padding: 16px 32px;
+    background: var(--bg-secondary);
+    border: 1px solid var(--border);
+    border-radius: 100px;
+    flex-shrink: 0;
+    transition: all 0.4s cubic-bezier(0.19, 1, 0.22, 1);
+  }
+
+  .tech-item:hover {
+    background: var(--bg-tertiary);
+    border-color: var(--border-hover);
+    transform: scale(1.05);
+  }
+
+  /* Icons en couleur par defaut */
+  .tech-icon {
+    width: 32px;
+    height: 32px;
+    object-fit: contain;
+    transition: transform 0.4s cubic-bezier(0.19, 1, 0.22, 1);
+  }
+
+  .tech-item:hover .tech-icon {
+    transform: scale(1.1);
+  }
+
+  .tech-name {
+    font-size: 16px;
+    font-weight: 500;
+    color: var(--text-secondary);
+    white-space: nowrap;
+    transition: color 0.4s cubic-bezier(0.19, 1, 0.22, 1);
+  }
+
+  .tech-item:hover .tech-name {
+    color: var(--text-primary);
+  }
+
+  /* Pause on hover */
+  .marquee-track:hover .marquee-content {
+    animation-play-state: paused;
+  }
+
+  @media (max-width: 768px) {
+    .marquee-content {
+      gap: 24px;
+    }
+
+    .tech-item {
+      padding: 12px 20px;
+      gap: 12px;
+    }
+
+    .tech-icon {
+      width: 24px;
+      height: 24px;
+    }
+
+    .tech-name {
+      font-size: 14px;
+    }
+
+    .marquee-mask {
+      width: 60px;
+    }
+  }
+</style>

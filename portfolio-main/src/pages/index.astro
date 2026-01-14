@@ -1,0 +1,68 @@
+---
+import Layout from '../layouts/Layout.astro';
+import Header from '../components/Header.astro';
+import Hero from '../components/Hero.astro';
+import TechMarquee from '../components/TechMarquee.astro';
+import Projects from '../components/Projects.astro';
+import About from '../components/About.astro';
+import Contact from '../components/Contact.astro';
+import Footer from '../components/Footer.astro';
+
+// Personnalise ces informations
+const siteConfig = {
+  name: "Ismail",
+  title: "Développeur & Expert Sécurité",
+  description: "Je crée des solutions web sur mesure et j'accompagne les entreprises dans leurs projets digitaux. Du site vitrine au SaaS complexe, avec la sécurité comme priorité.",
+  siteTitle: "Portfolio | Développeur Full-Stack & Sécurité",
+  siteDescription: "Portfolio de développeur full-stack spécialisé en React, Node.js et TypeScript. Découvrez mes projets et compétences."
+};
+---
+
+<Layout title={siteConfig.siteTitle} description={siteConfig.siteDescription}>
+  <Header />
+  <main>
+    <Hero
+      name={siteConfig.name}
+      title={siteConfig.title}
+      description={siteConfig.description}
+    />
+    <TechMarquee />
+    <Projects />
+    <About />
+    <Contact />
+  </main>
+  <Footer />
+</Layout>
+
+<style is:global>
+  /* Page sections spacing */
+  main > section {
+    position: relative;
+  }
+
+  /* Ensure smooth transitions between sections */
+  section {
+    isolation: isolate;
+  }
+
+  /* Smooth locomotive-style scrolling feel */
+  html.lenis {
+    height: auto;
+  }
+
+  .lenis.lenis-smooth {
+    scroll-behavior: auto;
+  }
+
+  .lenis.lenis-smooth [data-lenis-prevent] {
+    overscroll-behavior: contain;
+  }
+
+  .lenis.lenis-stopped {
+    overflow: hidden;
+  }
+
+  .lenis.lenis-scrolling iframe {
+    pointer-events: none;
+  }
+</style>

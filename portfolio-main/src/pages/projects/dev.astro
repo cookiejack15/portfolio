@@ -1,0 +1,762 @@
+---
+import ProjectLayout from '../../layouts/ProjectLayout.astro';
+
+const base = import.meta.env.BASE_URL;
+
+const projects = [
+  {
+    title: "ECHO Prospection",
+    description: "Agent SDR IA qui négocie, relance et classe les prospects automatiquement. Automatisez votre prospection commerciale de A à Z avec une intelligence artificielle qui comprend vos besoins.",
+    tags: ["IA / LLM", "Automatisation", "CRM", "Email", "Python"],
+    image: "/projects/echo-logo.png",
+    link: `${base}projects/echo-prospection`,
+    featured: true,
+    highlights: [
+      "Négociation autonome par email",
+      "Classification intelligente des prospects",
+      "Intégration CRM complète"
+    ]
+  },
+  {
+    title: "Castle-J",
+    description: "ERP intelligent nouvelle génération avec agent IA autonome. Gestion complète : CRM, facturation, stock, comptabilité, RH et plus encore. Une solution tout-en-un pour les PME.",
+    tags: ["React", "Node.js", "PostgreSQL", "IA", "TypeScript"],
+    image: "/projects/castle-j-logo.png",
+    link: `${base}projects/castle-j`,
+    featured: true,
+    highlights: [
+      "Agent IA avec 3 modes d'autonomie",
+      "7 modules métier intégrés",
+      "Interface moderne et intuitive"
+    ]
+  },
+  {
+    title: "Gabriel.le",
+    description: "Site vitrine élégant pour une marque de lingerie de luxe éco-responsable. Design raffiné, guide des tailles interactif, et système de rendez-vous intégré.",
+    tags: ["Astro", "UI/UX", "Luxe", "Éco-responsable", "GSAP"],
+    image: "/projects/gabrielle-logo.png",
+    link: `${base}projects/gabrielle-hub`,
+    featured: false,
+    highlights: [
+      "Design luxe et minimaliste",
+      "Guide des tailles interactif",
+      "Animations fluides et élégantes"
+    ]
+  }
+];
+---
+
+<ProjectLayout title="Développement Web | Ismail Chiba" description="Projets de développement web et applications - Du site vitrine au SaaS complexe">
+  <!-- Navigation -->
+  <nav class="project-nav">
+    <a href={base} class="nav-back">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <path d="M19 12H5M12 19l-7-7 7-7"/>
+      </svg>
+      <span>Retour</span>
+    </a>
+    <div class="nav-breadcrumb font-mono">
+      <a href={`${base}#projects`}>Expertises</a>
+      <span>/</span>
+      <span class="current">Développement</span>
+    </div>
+  </nav>
+
+  <!-- Hero Section -->
+  <section class="dev-hero">
+    <div class="hero-bg-pattern"></div>
+    <div class="container">
+      <div class="hero-badge" data-animate="badge">
+        <span class="badge-icon">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/>
+          </svg>
+        </span>
+        <span class="badge-text font-mono">Développement Web</span>
+      </div>
+
+      <h1 class="hero-title" data-animate="title">
+        Applications Web<br/>& Solutions Digitales
+      </h1>
+
+      <p class="hero-description" data-animate="desc">
+        Du site vitrine au SaaS complexe, je conçois des solutions web performantes et sur mesure.
+        Applications métier, ERP intelligents, agents IA autonomes — chaque projet est une opportunité
+        de créer de la valeur.
+      </p>
+
+      <div class="hero-stats" data-animate="stats">
+        <div class="stat">
+          <span class="stat-value">3+</span>
+          <span class="stat-label">Projets majeurs</span>
+        </div>
+        <div class="stat">
+          <span class="stat-value">IA</span>
+          <span class="stat-label">Intégration LLM</span>
+        </div>
+        <div class="stat">
+          <span class="stat-value">Full</span>
+          <span class="stat-label">Stack</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Projects Grid -->
+  <section class="projects-section">
+    <div class="container">
+      <div class="projects-grid">
+        {projects.map((project, index) => (
+          <a href={project.link} class="project-card" data-animate="card" data-index={index}>
+            <div class="card-image">
+              {project.image ? (
+                <img src={project.image} alt={project.title} loading="lazy" />
+              ) : (
+                <div class="image-placeholder">
+                  <svg width="60" height="60" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="0.5">
+                    <rect x="3" y="3" width="18" height="18" rx="2"/>
+                    <circle cx="8.5" cy="8.5" r="1.5"/>
+                    <path d="M21 15l-5-5L5 21"/>
+                  </svg>
+                </div>
+              )}
+              {project.featured && (
+                <span class="featured-badge font-mono">Featured</span>
+              )}
+            </div>
+
+            <div class="card-content">
+              <span class="card-number font-mono">0{index + 1}</span>
+              <h2 class="card-title">{project.title}</h2>
+              <p class="card-description">{project.description}</p>
+
+              <div class="card-highlights">
+                {project.highlights.map((highlight) => (
+                  <div class="highlight">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                      <polyline points="20 6 9 17 4 12"/>
+                    </svg>
+                    <span>{highlight}</span>
+                  </div>
+                ))}
+              </div>
+
+              <div class="card-tags">
+                {project.tags.map((tag) => (
+                  <span class="card-tag font-mono">{tag}</span>
+                ))}
+              </div>
+
+              <div class="card-cta">
+                <span>Voir le projet</span>
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M5 12h14M12 5l7 7-7 7"/>
+                </svg>
+              </div>
+            </div>
+          </a>
+        ))}
+      </div>
+    </div>
+  </section>
+
+  <!-- Tech Stack Section -->
+  <section class="tech-section">
+    <div class="container">
+      <h2 class="section-title" data-animate="tech-title">Stack Technique</h2>
+
+      <div class="tech-grid" data-animate="tech-grid">
+        <div class="tech-category">
+          <h3 class="tech-category-title">Frontend</h3>
+          <div class="tech-items">
+            <span class="tech-item">React</span>
+            <span class="tech-item">Next.js</span>
+            <span class="tech-item">Astro</span>
+            <span class="tech-item">TypeScript</span>
+            <span class="tech-item">GSAP</span>
+          </div>
+        </div>
+
+        <div class="tech-category">
+          <h3 class="tech-category-title">Backend</h3>
+          <div class="tech-items">
+            <span class="tech-item">Node.js</span>
+            <span class="tech-item">Python</span>
+            <span class="tech-item">Express</span>
+            <span class="tech-item">FastAPI</span>
+          </div>
+        </div>
+
+        <div class="tech-category">
+          <h3 class="tech-category-title">Data & IA</h3>
+          <div class="tech-items">
+            <span class="tech-item">PostgreSQL</span>
+            <span class="tech-item">MongoDB</span>
+            <span class="tech-item">OpenAI</span>
+            <span class="tech-item">LangChain</span>
+          </div>
+        </div>
+
+        <div class="tech-category">
+          <h3 class="tech-category-title">DevOps</h3>
+          <div class="tech-items">
+            <span class="tech-item">Docker</span>
+            <span class="tech-item">Git</span>
+            <span class="tech-item">CI/CD</span>
+            <span class="tech-item">Vercel</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- CTA Section -->
+  <section class="cta-section">
+    <div class="container">
+      <div class="cta-content" data-animate="cta">
+        <h2>Un projet en tête ?</h2>
+        <p>Discutons de votre vision et transformons-la en réalité.</p>
+        <a href={`${base}#contact`} class="btn btn-primary">
+          <span>Me contacter</span>
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M5 12h14M12 5l7 7-7 7"/>
+          </svg>
+        </a>
+      </div>
+    </div>
+  </section>
+</ProjectLayout>
+
+<script>
+  import { gsap } from 'gsap';
+  import { ScrollTrigger } from 'gsap/ScrollTrigger';
+
+  gsap.registerPlugin(ScrollTrigger);
+
+  document.addEventListener('DOMContentLoaded', () => {
+    // Hero animations
+    const tl = gsap.timeline({ defaults: { ease: 'power4.out' } });
+
+    tl.fromTo('[data-animate="badge"]',
+      { opacity: 0, y: 30 },
+      { opacity: 1, y: 0, duration: 0.8 }
+    );
+
+    tl.fromTo('[data-animate="title"]',
+      { opacity: 0, y: 50 },
+      { opacity: 1, y: 0, duration: 1 },
+      '-=0.5'
+    );
+
+    tl.fromTo('[data-animate="desc"]',
+      { opacity: 0, y: 30 },
+      { opacity: 1, y: 0, duration: 0.8 },
+      '-=0.6'
+    );
+
+    tl.fromTo('[data-animate="stats"] .stat',
+      { opacity: 0, y: 20 },
+      { opacity: 1, y: 0, duration: 0.6, stagger: 0.1 },
+      '-=0.4'
+    );
+
+    // Project cards animation
+    gsap.fromTo('[data-animate="card"]',
+      { opacity: 0, y: 60 },
+      {
+        opacity: 1,
+        y: 0,
+        duration: 0.8,
+        stagger: 0.15,
+        ease: 'power3.out',
+        scrollTrigger: {
+          trigger: '.projects-grid',
+          start: 'top 80%',
+        }
+      }
+    );
+
+    // Tech section
+    gsap.fromTo('[data-animate="tech-title"]',
+      { opacity: 0, y: 30 },
+      {
+        opacity: 1,
+        y: 0,
+        duration: 0.8,
+        scrollTrigger: {
+          trigger: '.tech-section',
+          start: 'top 80%',
+        }
+      }
+    );
+
+    gsap.fromTo('.tech-category',
+      { opacity: 0, y: 40 },
+      {
+        opacity: 1,
+        y: 0,
+        duration: 0.6,
+        stagger: 0.1,
+        scrollTrigger: {
+          trigger: '.tech-grid',
+          start: 'top 80%',
+        }
+      }
+    );
+
+    // CTA
+    gsap.fromTo('[data-animate="cta"]',
+      { opacity: 0, y: 40 },
+      {
+        opacity: 1,
+        y: 0,
+        duration: 0.8,
+        scrollTrigger: {
+          trigger: '.cta-section',
+          start: 'top 80%',
+        }
+      }
+    );
+  });
+</script>
+
+<style>
+  /* Navigation */
+  .project-nav {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 20px 40px;
+    background: rgba(10, 10, 10, 0.8);
+    backdrop-filter: blur(20px);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+    z-index: 1000;
+  }
+
+  .nav-back {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    color: var(--text-secondary);
+    font-size: 14px;
+    transition: color 0.3s ease;
+  }
+
+  .nav-back:hover {
+    color: var(--text-primary);
+  }
+
+  .nav-breadcrumb {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    font-size: 12px;
+    color: var(--text-muted);
+  }
+
+  .nav-breadcrumb a {
+    color: var(--text-muted);
+    transition: color 0.3s ease;
+  }
+
+  .nav-breadcrumb a:hover {
+    color: var(--accent);
+  }
+
+  .nav-breadcrumb .current {
+    color: var(--text-secondary);
+  }
+
+  /* Hero */
+  .dev-hero {
+    position: relative;
+    padding: 180px 0 120px;
+    overflow: hidden;
+  }
+
+  .hero-bg-pattern {
+    position: absolute;
+    inset: 0;
+    background:
+      radial-gradient(circle at 20% 50%, rgba(59, 130, 246, 0.08) 0%, transparent 50%),
+      radial-gradient(circle at 80% 80%, rgba(147, 197, 253, 0.05) 0%, transparent 40%);
+    pointer-events: none;
+  }
+
+  .container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 40px;
+    position: relative;
+  }
+
+  .hero-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    padding: 10px 20px;
+    background: rgba(59, 130, 246, 0.1);
+    border: 1px solid rgba(59, 130, 246, 0.2);
+    border-radius: 100px;
+    margin-bottom: 32px;
+  }
+
+  .badge-icon {
+    color: var(--accent);
+  }
+
+  .badge-text {
+    font-size: 12px;
+    color: var(--accent);
+    text-transform: uppercase;
+    letter-spacing: 0.15em;
+  }
+
+  .hero-title {
+    font-size: clamp(40px, 8vw, 72px);
+    font-weight: 700;
+    letter-spacing: -0.03em;
+    line-height: 1.1;
+    margin: 0 0 32px;
+  }
+
+  .hero-description {
+    font-size: 18px;
+    line-height: 1.8;
+    color: var(--text-secondary);
+    max-width: 700px;
+    margin: 0 0 48px;
+  }
+
+  .hero-stats {
+    display: flex;
+    gap: 48px;
+  }
+
+  .stat {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+  }
+
+  .stat-value {
+    font-size: 32px;
+    font-weight: 700;
+    color: var(--accent);
+  }
+
+  .stat-label {
+    font-size: 13px;
+    color: var(--text-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+  }
+
+  /* Projects Grid */
+  .projects-section {
+    padding: 80px 0 120px;
+  }
+
+  .projects-grid {
+    display: flex;
+    flex-direction: column;
+    gap: 40px;
+  }
+
+  .project-card {
+    display: grid;
+    grid-template-columns: 1fr 1.2fr;
+    gap: 60px;
+    padding: 40px;
+    background: rgba(255, 255, 255, 0.02);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 24px;
+    text-decoration: none;
+    color: inherit;
+    transition: all 0.4s ease;
+  }
+
+  .project-card:hover {
+    border-color: rgba(255, 255, 255, 0.15);
+    transform: translateY(-4px);
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.2);
+  }
+
+  .card-image {
+    position: relative;
+    aspect-ratio: 16/10;
+    border-radius: 16px;
+    overflow: hidden;
+    background: var(--bg-secondary);
+  }
+
+  .card-image img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 0.5s ease;
+  }
+
+  .project-card:hover .card-image img {
+    transform: scale(1.05);
+  }
+
+  .image-placeholder {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--text-muted);
+    background: linear-gradient(135deg, var(--bg-secondary), var(--bg-tertiary));
+  }
+
+  .featured-badge {
+    position: absolute;
+    top: 16px;
+    right: 16px;
+    padding: 6px 12px;
+    background: var(--accent);
+    color: white;
+    font-size: 10px;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    border-radius: 100px;
+  }
+
+  .card-content {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    gap: 16px;
+  }
+
+  .card-number {
+    font-size: 13px;
+    color: var(--accent);
+    letter-spacing: 0.2em;
+  }
+
+  .card-title {
+    font-size: clamp(28px, 4vw, 40px);
+    font-weight: 700;
+    letter-spacing: -0.02em;
+    margin: 0;
+    line-height: 1.2;
+  }
+
+  .card-description {
+    font-size: 16px;
+    line-height: 1.7;
+    color: var(--text-secondary);
+    margin: 0;
+  }
+
+  .card-highlights {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    margin: 8px 0;
+  }
+
+  .highlight {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-size: 14px;
+    color: var(--text-secondary);
+  }
+
+  .highlight svg {
+    color: var(--accent);
+    flex-shrink: 0;
+  }
+
+  .card-tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+  }
+
+  .card-tag {
+    padding: 6px 14px;
+    background: rgba(255, 255, 255, 0.03);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 100px;
+    font-size: 11px;
+    color: var(--text-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+  }
+
+  .card-cta {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-top: 8px;
+    font-size: 15px;
+    font-weight: 500;
+    color: var(--text-secondary);
+    transition: all 0.3s ease;
+  }
+
+  .card-cta svg {
+    transition: transform 0.3s ease;
+  }
+
+  .project-card:hover .card-cta {
+    color: var(--accent);
+  }
+
+  .project-card:hover .card-cta svg {
+    transform: translateX(6px);
+  }
+
+  /* Tech Section */
+  .tech-section {
+    padding: 100px 0;
+    background: rgba(255, 255, 255, 0.01);
+    border-top: 1px solid rgba(255, 255, 255, 0.05);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+  }
+
+  .section-title {
+    font-size: clamp(32px, 5vw, 48px);
+    font-weight: 700;
+    letter-spacing: -0.03em;
+    margin: 0 0 60px;
+    text-align: center;
+  }
+
+  .tech-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 40px;
+  }
+
+  .tech-category {
+    text-align: center;
+  }
+
+  .tech-category-title {
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--text-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.15em;
+    margin: 0 0 20px;
+  }
+
+  .tech-items {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+  }
+
+  .tech-item {
+    padding: 12px 20px;
+    background: rgba(255, 255, 255, 0.03);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 12px;
+    font-size: 14px;
+    color: var(--text-secondary);
+    transition: all 0.3s ease;
+  }
+
+  .tech-item:hover {
+    background: rgba(255, 255, 255, 0.05);
+    border-color: var(--accent);
+    color: var(--text-primary);
+  }
+
+  /* CTA Section */
+  .cta-section {
+    padding: 120px 0;
+  }
+
+  .cta-content {
+    text-align: center;
+    max-width: 600px;
+    margin: 0 auto;
+  }
+
+  .cta-content h2 {
+    font-size: clamp(32px, 5vw, 48px);
+    font-weight: 700;
+    letter-spacing: -0.03em;
+    margin: 0 0 16px;
+  }
+
+  .cta-content p {
+    font-size: 18px;
+    color: var(--text-secondary);
+    margin: 0 0 32px;
+  }
+
+  .btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    padding: 16px 32px;
+    background: var(--text-primary);
+    color: var(--bg-primary);
+    border-radius: 100px;
+    font-size: 15px;
+    font-weight: 500;
+    transition: all 0.3s ease;
+  }
+
+  .btn:hover {
+    background: var(--accent);
+    color: white;
+    transform: translateY(-2px);
+  }
+
+  /* Responsive */
+  @media (max-width: 1024px) {
+    .project-card {
+      grid-template-columns: 1fr;
+      gap: 32px;
+    }
+
+    .tech-grid {
+      grid-template-columns: repeat(2, 1fr);
+    }
+  }
+
+  @media (max-width: 768px) {
+    .project-nav {
+      padding: 16px 20px;
+    }
+
+    .container {
+      padding: 0 20px;
+    }
+
+    .dev-hero {
+      padding: 140px 0 80px;
+    }
+
+    .hero-stats {
+      flex-wrap: wrap;
+      gap: 32px;
+    }
+
+    .project-card {
+      padding: 24px;
+    }
+
+    .tech-grid {
+      grid-template-columns: 1fr;
+      gap: 32px;
+    }
+
+    .cta-section {
+      padding: 80px 0;
+    }
+  }
+</style>

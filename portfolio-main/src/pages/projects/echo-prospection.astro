@@ -1,0 +1,1157 @@
+---
+import ProjectLayout from '../../layouts/ProjectLayout.astro';
+import Header from '../../components/Header.astro';
+import Footer from '../../components/Footer.astro';
+
+const base = import.meta.env.BASE_URL;
+
+const techStackBackend = [
+  { name: "Node.js", logo: "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/nodejs/nodejs-original.svg" },
+  { name: "Express", logo: "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/express/express-original.svg" },
+  { name: "MongoDB", logo: "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/mongodb/mongodb-original.svg" },
+  { name: "OpenAI", logo: "https://cdn.worldvectorlogo.com/logos/openai-2.svg" },
+  { name: "Playwright", logo: "https://playwright.dev/img/playwright-logo.svg" },
+  { name: "Socket.IO", logo: "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/socketio/socketio-original.svg" },
+];
+
+const techStackFrontend = [
+  { name: "HTML5", logo: "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/html5/html5-original.svg" },
+  { name: "CSS3", logo: "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/css3/css3-original.svg" },
+  { name: "JavaScript", logo: "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/javascript/javascript-original.svg" },
+  { name: "Chart.js", logo: "https://www.chartjs.org/img/chartjs-logo.svg" },
+];
+
+const techStackInfra = [
+  { name: "Linux", logo: "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/linux/linux-original.svg" },
+  { name: "Nginx", logo: "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/nginx/nginx-original.svg" },
+  { name: "PM2", logo: "https://raw.githubusercontent.com/Unitech/pm2/master/pres/pm2-v4.png" },
+];
+
+const features = [
+  {
+    icon: `<svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>`,
+    title: "Email Finder Propriétaire",
+    description: "Algorithme développé 100% en interne. 12 patterns × 4 stratégies = 120 combinaisons testées avec validation DNS MX."
+  },
+  {
+    icon: `<svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect width="18" height="10" x="3" y="11" rx="2"/><circle cx="12" cy="16" r="2"/><path d="M12 11V7a4 4 0 0 1 4-4h1a2 2 0 0 1 2 2v1"/><path d="M7 11V7a4 4 0 0 0-4-4"/><path d="M12 7v4"/></svg>`,
+    title: "Bot LinkedIn Intelligent",
+    description: "Scraping conversations, réponses contextuelles GPT-4, anti-détection avancé avec simulation comportement humain."
+  },
+  {
+    icon: `<svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M3 3v18h18"/><path d="m19 9-5 5-4-4-3 3"/></svg>`,
+    title: "Qualification Automatique",
+    description: "Classification COLD/WARM/HOT/SIGNED automatique avec détection d'intention et analyse de sentiment."
+  },
+  {
+    icon: `<svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect width="20" height="16" x="2" y="4" rx="2"/><path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"/></svg>`,
+    title: "Campagnes Email",
+    description: "Configuration SMTP auto-détectée, génération de messages IA personnalisés, tracking des tentatives."
+  },
+  {
+    icon: `<svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><line x1="12" x2="12" y1="20" y2="10"/><line x1="18" x2="18" y1="20" y2="4"/><line x1="6" x2="6" y1="20" y2="14"/></svg>`,
+    title: "Analytics Temps Réel",
+    description: "Dashboard avec stats dynamiques, graphiques Chart.js, calculs de croissance automatiques."
+  },
+  {
+    icon: `<svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="2"/></svg>`,
+    title: "Kanban Drag & Drop",
+    description: "Gestion des prospects avec HTML5 natif, detection click vs hold, notes et tags personnalisés."
+  },
+];
+
+const antiDetection = [
+  "User-Agent rotation automatique",
+  "Délais aléatoires (200ms-5s)",
+  "Mouvements de souris simulés",
+  "Scroll progressif naturel",
+  "Typage humain (vélocité variable)",
+  "Stealth mode Playwright",
+  "Mobile emulation parfaite",
+];
+
+const emailAlgorithm = [
+  { step: "1", title: "Domaine entreprise", description: ".com, .fr → 24 combinaisons" },
+  { step: "2", title: "Gmail", description: ".com, .fr → 24 combinaisons" },
+  { step: "3", title: "Outlook/Hotmail", description: ".com, .fr → 48 combinaisons" },
+  { step: "4", title: "Yahoo", description: ".com, .fr → 24 combinaisons" },
+];
+
+const aiCapabilities = [
+  "Génération de réponses contextuelles",
+  "Analyse de sentiment conversationnel",
+  "Détection d'intention (RDV, questions, objections)",
+  "Création de résumés de conversations",
+  "Génération d'emails personnalisés",
+  "Prompt engineering dynamique",
+];
+
+const securityFeatures = [
+  "JWT avec expiration",
+  "Passwords hashés (bcrypt)",
+  "Input sanitization",
+  "Rate limiting",
+  "CORS configuré",
+  "SSL/TLS Let's Encrypt",
+];
+---
+
+<ProjectLayout title="ECHO Prospection - SDR IA" description="Agent SDR IA qui négocie, relance et classe les prospects automatiquement">
+  <Header />
+
+  <main class="project-page">
+    <!-- Hero -->
+    <section class="project-hero">
+      <div class="container">
+        <a href={`${base}#projects`} class="back-link">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M19 12H5M12 19l-7-7 7-7"/>
+          </svg>
+          <span>Retour aux projets</span>
+        </a>
+
+        <div class="project-hero-content">
+          <span class="project-tag font-mono">SDR IA</span>
+          <h1 class="project-title">ECHO Prospection</h1>
+          <p class="project-subtitle">Agent commercial IA qui automatise votre prospection de A à Z</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- Scroll Section with fixed image -->
+    <section class="scroll-section" id="scroll-section">
+      <div class="scroll-container">
+        <!-- Fixed Image Container -->
+        <div class="scroll-image-container">
+          <div class="scroll-images">
+            <img src="/projects/echo-vitrine.png" alt="ECHO Vitrine" class="scroll-img active" data-image="vitrine" />
+            <img src="/projects/echo-dashboard.png" alt="ECHO Dashboard" class="scroll-img" data-image="dashboard" />
+          </div>
+        </div>
+
+        <!-- Scrolling Content -->
+        <div class="scroll-content">
+          <!-- Vitrine Section -->
+          <div class="content-block" data-trigger="vitrine">
+            <span class="content-label font-mono">L'origine</span>
+            <h2>Comment tout a commencé</h2>
+            <p>
+              Un jour, un pote me demande : <em>"Tu penses que c'est possible de créer un SDR IA ?
+              Un truc qui prospecte, négocie et relance automatiquement ?"</em>
+            </p>
+            <p>
+              Ma réponse ? <strong>"Laisse-moi essayer."</strong>
+            </p>
+            <p>
+              C'est comme ça qu'ECHO est né. From scratch. Le site vitrine, l'application,
+              l'extension Chrome - tout construit de zéro avec une obsession : automatiser
+              la prospection sans perdre le côté humain.
+            </p>
+          </div>
+
+          <div class="content-block" data-trigger="vitrine">
+            <span class="content-label font-mono">Le nom</span>
+            <h2>Pourquoi ECHO ?</h2>
+            <p>
+              <strong>ECHO</strong> - comme l'écho d'un son qui se répercute. Vos messages
+              résonnent, vos relances persistent, votre présence se fait entendre.
+            </p>
+            <p>
+              Et entre nous ? C'est aussi le nom d'un alien dans Ben 10. Un clin d'œil
+              à l'enfant en moi qui rêvait de créer des trucs cool.
+            </p>
+          </div>
+
+          <div class="content-block" data-trigger="vitrine">
+            <span class="content-label font-mono">Le problème</span>
+            <h2>La prospection, c'est l'enfer</h2>
+            <p>
+              Chercher des contacts. Envoyer des messages. Relancer. Qualifier.
+              Recommencer. Pendant des heures. Chaque. Jour.
+            </p>
+            <p>
+              Sans parler des limites LinkedIn qui vous bloquent au pire moment,
+              des prospects qui ghostent, des leads froids qu'on oublie...
+            </p>
+            <p>
+              <strong>ECHO résout tout ça.</strong>
+            </p>
+          </div>
+
+          <!-- Dashboard Section -->
+          <div class="content-block" data-trigger="dashboard">
+            <span class="content-label font-mono">La solution</span>
+            <h2>Un SDR qui bosse 24/7</h2>
+            <p>
+              ECHO trouve les emails, enrichit les profils depuis LinkedIn,
+              engage des conversations personnalisées et relance au bon moment.
+            </p>
+            <p>
+              Vous définissez vos limites. L'IA respecte les restrictions LinkedIn.
+              Et vous reprenez la main quand vous voulez.
+            </p>
+          </div>
+
+          <div class="content-block features-list" data-trigger="dashboard">
+            <h3>Ce qu'ECHO fait pour vous</h3>
+            <ul>
+              <li><strong>Email Finder</strong> - Algorithme propriétaire avec validation DNS MX</li>
+              <li><strong>Enrichissement</strong> - Récolte bio, expériences, posts et commentaires LinkedIn</li>
+              <li><strong>Négociation IA</strong> - Conversations personnalisées GPT-4</li>
+              <li><strong>Relances</strong> - Programmées avec délais personnalisables</li>
+              <li><strong>Classification</strong> - COLD/WARM/HOT/SIGNED automatiquement</li>
+              <li><strong>Anti-détection</strong> - Simulation comportement humain avancée</li>
+              <li><strong>Campagnes Email</strong> - SMTP auto-détecté (Gmail/Outlook)</li>
+              <li><strong>Extension Chrome</strong> - Connexion LinkedIn en un clic</li>
+            </ul>
+          </div>
+
+          <div class="content-block" data-trigger="dashboard">
+            <span class="content-label font-mono">Contrôle</span>
+            <h2>Vous gardez la main</h2>
+            <p>
+              Contrairement aux bots stupides, ECHO vous laisse le contrôle total.
+              Reprenez n'importe quelle conversation. Ajustez les limites.
+              Sélectionnez qui relancer.
+            </p>
+            <p>
+              <strong>L'IA travaille. Vous décidez.</strong>
+            </p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Features -->
+    <section class="features-section">
+      <div class="container">
+        <h2 class="section-title">Fonctionnalités Clés</h2>
+        <div class="features-grid">
+          {features.map((feature) => (
+            <div class="feature-card">
+              <span class="feature-icon" set:html={feature.icon}></span>
+              <h3>{feature.title}</h3>
+              <p>{feature.description}</p>
+            </div>
+          ))}
+        </div>
+      </div>
+    </section>
+
+    <!-- Email Algorithm -->
+    <section class="algorithm-section">
+      <div class="container">
+        <h2 class="section-title">Algorithme Email Propriétaire</h2>
+        <p class="section-subtitle">Stratégie en cascade avec early return - 100% développé en interne</p>
+
+        <div class="algorithm-steps">
+          {emailAlgorithm.map((item) => (
+            <div class="algorithm-step">
+              <span class="step-number">{item.step}</span>
+              <div class="step-content">
+                <h3>{item.title}</h3>
+                <p>{item.description}</p>
+              </div>
+            </div>
+          ))}
+        </div>
+
+        <div class="algorithm-info">
+          <h3>12 patterns d'emails testés</h3>
+          <p class="patterns">
+            john.doe • johndoe • john • doe • jdoe • johnd • john.d • j.doe • doe.john • doejohn • john_doe • john-doe
+          </p>
+          <p class="result">
+            <strong>Validation DNS MX native</strong> - Module DNS natif Node.js, pas d'envoi d'email réel (100% passif)
+          </p>
+        </div>
+      </div>
+    </section>
+
+    <!-- Anti-Detection -->
+    <section class="antidetection-section">
+      <div class="container">
+        <h2 class="section-title">Anti-Détection LinkedIn</h2>
+        <p class="section-subtitle">Simulation comportement humain avancée</p>
+
+        <div class="antidetection-grid">
+          {antiDetection.map((item) => (
+            <div class="antidetection-item">
+              <span class="check-icon">✓</span>
+              <span>{item}</span>
+            </div>
+          ))}
+        </div>
+      </div>
+    </section>
+
+    <!-- AI Capabilities -->
+    <section class="ai-section">
+      <div class="container">
+        <h2 class="section-title">Intelligence Artificielle</h2>
+        <p class="section-subtitle">GPT-4 pour des conversations naturelles et contextuelles</p>
+
+        <div class="ai-grid">
+          {aiCapabilities.map((item) => (
+            <div class="ai-item">
+              <span class="ai-icon"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5a3 3 0 1 0-5.997.125 4 4 0 0 0-2.526 5.77 4 4 0 0 0 .556 6.588A4 4 0 1 0 12 18Z"/><path d="M12 5a3 3 0 1 1 5.997.125 4 4 0 0 1 2.526 5.77 4 4 0 0 1-.556 6.588A4 4 0 1 1 12 18Z"/><path d="M15 13a4.5 4.5 0 0 1-3-4 4.5 4.5 0 0 1-3 4"/><path d="M17.599 6.5a3 3 0 0 0 .399-1.375"/><path d="M6.003 5.125A3 3 0 0 0 6.401 6.5"/><path d="M3.477 10.896a4 4 0 0 1 .585-.396"/><path d="M19.938 10.5a4 4 0 0 1 .585.396"/><path d="M6 18a4 4 0 0 1-1.967-.516"/><path d="M19.967 17.484A4 4 0 0 1 18 18"/></svg></span>
+              <span>{item}</span>
+            </div>
+          ))}
+        </div>
+      </div>
+    </section>
+
+    <!-- Stack Technique -->
+    <section class="tech-section">
+      <div class="container">
+        <h2 class="section-title">Stack Technique</h2>
+
+        <div class="tech-category">
+          <h3>Backend</h3>
+          <div class="tech-bubbles">
+            {techStackBackend.map((tech, index) => (
+              <div class="tech-bubble" style={`--delay: ${index * 0.3}s; --float-duration: ${3 + (index % 3)}s;`}>
+                <img src={tech.logo} alt={tech.name} />
+                <span>{tech.name}</span>
+              </div>
+            ))}
+          </div>
+        </div>
+
+        <div class="tech-category">
+          <h3>Frontend</h3>
+          <div class="tech-bubbles">
+            {techStackFrontend.map((tech, index) => (
+              <div class="tech-bubble" style={`--delay: ${index * 0.3}s; --float-duration: ${3 + (index % 3)}s;`}>
+                <img src={tech.logo} alt={tech.name} />
+                <span>{tech.name}</span>
+              </div>
+            ))}
+          </div>
+        </div>
+
+        <div class="tech-category">
+          <h3>Infrastructure</h3>
+          <div class="tech-bubbles">
+            {techStackInfra.map((tech, index) => (
+              <div class="tech-bubble" style={`--delay: ${index * 0.3}s; --float-duration: ${3 + (index % 3)}s;`}>
+                <img src={tech.logo} alt={tech.name} />
+                <span>{tech.name}</span>
+              </div>
+            ))}
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Architecture -->
+    <section class="architecture-section">
+      <div class="container">
+        <h2 class="section-title">Architecture & Sécurité</h2>
+
+        <div class="architecture-grid">
+          <div class="architecture-card">
+            <div class="arch-header">
+              <span class="arch-icon"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect width="16" height="20" x="4" y="2" rx="2"/><line x1="8" x2="16" y1="6" y2="6"/><line x1="8" x2="16" y1="10" y2="10"/><line x1="8" x2="16" y1="14" y2="14"/><line x1="8" x2="16" y1="18" y2="18"/></svg></span>
+              <h3>Architecture</h3>
+            </div>
+            <ul>
+              <li>API RESTful MVC</li>
+              <li>Async/await pour toutes les opérations I/O</li>
+              <li>Middleware Express (auth, validation, logging)</li>
+              <li>Schema validation Mongoose</li>
+              <li>WebSocket temps réel (Socket.IO)</li>
+              <li>Event delegation pattern</li>
+            </ul>
+          </div>
+
+          <div class="architecture-card">
+            <div class="arch-header">
+              <span class="arch-icon"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect width="18" height="11" x="3" y="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg></span>
+              <h3>Sécurité</h3>
+            </div>
+            <ul>
+              {securityFeatures.map((item) => (
+                <li>{item}</li>
+              ))}
+            </ul>
+          </div>
+
+          <div class="architecture-card">
+            <div class="arch-header">
+              <span class="arch-icon"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M13 2 3 14h9l-1 8 10-12h-9l1-8z"/></svg></span>
+              <h3>Performance</h3>
+            </div>
+            <ul>
+              <li>Debouncing recherches (300ms)</li>
+              <li>Lazy loading données</li>
+              <li>Pagination prospects</li>
+              <li>Caching résultats API</li>
+              <li>Indexes MongoDB optimisés</li>
+              <li>Connection pooling</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Points Différenciants -->
+    <section class="differentiators-section">
+      <div class="container">
+        <h2 class="section-title">Points Différenciants</h2>
+
+        <div class="differentiators-list">
+          <div class="differentiator">
+            <span class="diff-number">01</span>
+            <p>Système propriétaire de recherche d'emails avec validation DNS MX</p>
+          </div>
+          <div class="differentiator">
+            <span class="diff-number">02</span>
+            <p>Anti-détection avancée pour scraping LinkedIn avec simulation humaine</p>
+          </div>
+          <div class="differentiator">
+            <span class="diff-number">03</span>
+            <p>IA conversationnelle contextuelle avec prompt engineering dynamique</p>
+          </div>
+          <div class="differentiator">
+            <span class="diff-number">04</span>
+            <p>Architecture full-stack sans frameworks frontend (performance maximale)</p>
+          </div>
+          <div class="differentiator">
+            <span class="diff-number">05</span>
+            <p>Automation intelligente avec simulation comportement humain réaliste</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- CTA -->
+    <section class="project-cta">
+      <div class="container">
+        <a href="https://echo-prospection.fr" class="cta-button" target="_blank" rel="noopener noreferrer">
+          <span>Visiter le site</span>
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M7 17L17 7M17 7H7M17 7V17"/>
+          </svg>
+        </a>
+      </div>
+    </section>
+  </main>
+
+  <Footer />
+</ProjectLayout>
+
+<script>
+  import { gsap } from 'gsap';
+  import { ScrollTrigger } from 'gsap/ScrollTrigger';
+
+  gsap.registerPlugin(ScrollTrigger);
+
+  document.addEventListener('DOMContentLoaded', () => {
+    const contentBlocks = document.querySelectorAll('.content-block');
+    let currentImage = 'vitrine';
+
+    function switchImage(newImage: string) {
+      if (newImage === currentImage) return;
+
+      const currentImg = document.querySelector(`.scroll-img[data-image="${currentImage}"]`);
+      const newImg = document.querySelector(`.scroll-img[data-image="${newImage}"]`);
+
+      if (currentImg && newImg) {
+        gsap.to(currentImg, {
+          opacity: 0,
+          duration: 0.4,
+          ease: 'power2.inOut',
+          onComplete: () => {
+            currentImg.classList.remove('active');
+          }
+        });
+
+        newImg.classList.add('active');
+        gsap.fromTo(newImg,
+          { opacity: 0 },
+          { opacity: 1, duration: 0.4, ease: 'power2.inOut' }
+        );
+
+        currentImage = newImage;
+      }
+    }
+
+    contentBlocks.forEach((block) => {
+      const trigger = block.getAttribute('data-trigger');
+
+      ScrollTrigger.create({
+        trigger: block,
+        start: 'top center',
+        end: 'bottom center',
+        onEnter: () => {
+          if (trigger) switchImage(trigger);
+        },
+        onEnterBack: () => {
+          if (trigger) switchImage(trigger);
+        },
+      });
+    });
+  });
+</script>
+
+<style>
+  .project-page {
+    min-height: 100vh;
+    padding-top: 120px;
+  }
+
+  .container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 24px;
+  }
+
+  /* Section Title */
+  .section-title {
+    font-size: 32px;
+    font-weight: 700;
+    text-align: center;
+    margin: 0 0 16px;
+    letter-spacing: -0.02em;
+  }
+
+  .section-subtitle {
+    font-size: 18px;
+    color: var(--text-secondary);
+    text-align: center;
+    margin: 0 0 48px;
+  }
+
+  /* Back link */
+  .back-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    color: var(--text-secondary);
+    font-size: 14px;
+    margin-bottom: 40px;
+    transition: color 0.3s ease;
+  }
+
+  .back-link:hover {
+    color: var(--text-primary);
+  }
+
+  /* Hero */
+  .project-hero {
+    padding-bottom: 80px;
+  }
+
+  .project-hero-content {
+    max-width: 800px;
+  }
+
+  .project-tag {
+    display: inline-block;
+    font-size: 12px;
+    color: var(--accent);
+    text-transform: uppercase;
+    letter-spacing: 0.25em;
+    margin-bottom: 20px;
+    padding: 8px 16px;
+    border: 1px solid rgba(59, 130, 246, 0.3);
+    border-radius: 100px;
+    background: rgba(59, 130, 246, 0.05);
+  }
+
+  .project-title {
+    font-size: clamp(48px, 8vw, 80px);
+    font-weight: 700;
+    letter-spacing: -0.04em;
+    margin: 0 0 24px;
+    line-height: 1.1;
+  }
+
+  .project-subtitle {
+    font-size: 20px;
+    line-height: 1.6;
+    color: var(--text-secondary);
+    margin: 0;
+  }
+
+  /* Scroll Sections */
+  .scroll-section {
+    padding: 100px 0;
+    position: relative;
+  }
+
+  .scroll-container {
+    max-width: 1600px;
+    margin: 0 auto;
+    padding: 0 40px;
+    display: grid;
+    grid-template-columns: 1.3fr 1fr;
+    gap: 50px;
+  }
+
+  .scroll-image-container {
+    position: sticky;
+    top: 120px;
+    height: fit-content;
+    align-self: start;
+  }
+
+  .scroll-images {
+    position: relative;
+    border-radius: 16px;
+    overflow: hidden;
+    background: linear-gradient(145deg, var(--bg-secondary), var(--bg-tertiary));
+    box-shadow:
+      0 4px 6px -1px rgba(0, 0, 0, 0.3),
+      0 10px 20px -5px rgba(0, 0, 0, 0.4),
+      0 0 0 1px rgba(255, 255, 255, 0.05);
+    transition: transform 0.4s ease, box-shadow 0.4s ease;
+  }
+
+  .scroll-images:hover {
+    transform: translateY(-4px);
+    box-shadow:
+      0 8px 12px -2px rgba(0, 0, 0, 0.4),
+      0 20px 40px -10px rgba(0, 0, 0, 0.5),
+      0 0 0 1px rgba(255, 255, 255, 0.08);
+  }
+
+  .scroll-img {
+    width: 100%;
+    height: auto;
+    display: block;
+    opacity: 0;
+    position: absolute;
+    top: 0;
+    left: 0;
+    transition: opacity 0.5s ease;
+  }
+
+  .scroll-img:first-child {
+    position: relative;
+  }
+
+  .scroll-img.active {
+    opacity: 1;
+  }
+
+  .scroll-content {
+    display: flex;
+    flex-direction: column;
+    gap: 40px;
+  }
+
+  .content-block {
+    padding: 40px;
+    background: var(--bg-secondary);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+  }
+
+  .content-label {
+    display: inline-block;
+    font-size: 11px;
+    color: var(--accent);
+    text-transform: uppercase;
+    letter-spacing: 0.2em;
+    margin-bottom: 16px;
+  }
+
+  .content-block h2 {
+    font-size: 28px;
+    font-weight: 700;
+    margin: 0 0 20px;
+    letter-spacing: -0.02em;
+  }
+
+  .content-block h3 {
+    font-size: 20px;
+    font-weight: 600;
+    margin: 0 0 20px;
+  }
+
+  .content-block p {
+    font-size: 16px;
+    line-height: 1.8;
+    color: var(--text-secondary);
+    margin: 0 0 16px;
+  }
+
+  .content-block p:last-child {
+    margin-bottom: 0;
+  }
+
+  .content-block em {
+    color: var(--text-primary);
+    font-style: italic;
+  }
+
+  .content-block strong {
+    color: var(--text-primary);
+    font-weight: 600;
+  }
+
+  /* Features List */
+  .features-list ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+  }
+
+  .features-list li {
+    padding: 16px 20px;
+    background: var(--bg-tertiary);
+    border-radius: 8px;
+    font-size: 15px;
+    color: var(--text-secondary);
+  }
+
+  .features-list li strong {
+    color: var(--accent);
+    margin-right: 8px;
+  }
+
+  /* Features Section */
+  .features-section {
+    padding: 100px 0;
+    background: var(--bg-secondary);
+  }
+
+  .features-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 24px;
+  }
+
+  .feature-card {
+    padding: 32px;
+    background: var(--bg-primary);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    transition: transform 0.3s ease, border-color 0.3s ease;
+  }
+
+  .feature-card:hover {
+    transform: translateY(-4px);
+    border-color: var(--accent);
+  }
+
+  .feature-icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 56px;
+    height: 56px;
+    margin-bottom: 16px;
+    color: var(--accent);
+    background: rgba(59, 130, 246, 0.1);
+    border-radius: 12px;
+  }
+
+  .feature-card h3 {
+    font-size: 18px;
+    font-weight: 600;
+    margin: 0 0 12px;
+  }
+
+  .feature-card p {
+    font-size: 14px;
+    line-height: 1.7;
+    color: var(--text-secondary);
+    margin: 0;
+  }
+
+  /* Algorithm Section */
+  .algorithm-section {
+    padding: 100px 0;
+  }
+
+  .algorithm-steps {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 20px;
+    margin-bottom: 48px;
+  }
+
+  .algorithm-step {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    padding: 24px;
+    background: var(--bg-secondary);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+  }
+
+  .step-number {
+    width: 40px;
+    height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: var(--accent);
+    color: white;
+    border-radius: 50%;
+    font-weight: 700;
+    margin-bottom: 16px;
+  }
+
+  .step-content h3 {
+    font-size: 16px;
+    font-weight: 600;
+    margin: 0 0 8px;
+  }
+
+  .step-content p {
+    font-size: 14px;
+    color: var(--text-secondary);
+    margin: 0;
+  }
+
+  .algorithm-info {
+    max-width: 700px;
+    margin: 0 auto;
+    text-align: center;
+    padding: 32px;
+    background: var(--bg-secondary);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+  }
+
+  .algorithm-info h3 {
+    font-size: 18px;
+    font-weight: 600;
+    margin: 0 0 16px;
+  }
+
+  .patterns {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 13px;
+    color: var(--accent);
+    margin: 0 0 20px;
+    word-spacing: 8px;
+  }
+
+  .result {
+    font-size: 15px;
+    color: var(--text-secondary);
+    margin: 0;
+  }
+
+  /* Anti-Detection Section */
+  .antidetection-section {
+    padding: 80px 0;
+    background: var(--bg-secondary);
+  }
+
+  .antidetection-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 16px;
+    max-width: 900px;
+    margin: 0 auto;
+  }
+
+  .antidetection-item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 16px 20px;
+    background: var(--bg-primary);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    font-size: 14px;
+    color: var(--text-secondary);
+  }
+
+  .check-icon {
+    color: #22c55e;
+    font-weight: bold;
+  }
+
+  /* AI Section */
+  .ai-section {
+    padding: 80px 0;
+  }
+
+  .ai-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 16px;
+    max-width: 900px;
+    margin: 0 auto;
+  }
+
+  .ai-item {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 20px 24px;
+    background: var(--bg-secondary);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    font-size: 15px;
+    color: var(--text-secondary);
+  }
+
+  .ai-icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 36px;
+    height: 36px;
+    color: var(--accent);
+    background: rgba(59, 130, 246, 0.1);
+    border-radius: 8px;
+    flex-shrink: 0;
+  }
+
+  /* Tech Section */
+  .tech-section {
+    padding: 100px 0;
+    background: var(--bg-secondary);
+  }
+
+  .tech-category {
+    margin-bottom: 48px;
+  }
+
+  .tech-category:last-child {
+    margin-bottom: 0;
+  }
+
+  .tech-category h3 {
+    font-size: 14px;
+    font-weight: 600;
+    text-align: center;
+    margin: 0 0 24px;
+    color: var(--text-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+  }
+
+  .tech-bubbles {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 16px;
+  }
+
+  .tech-bubble {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
+    padding: 20px 28px;
+    background: var(--bg-primary);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    animation: float var(--float-duration) ease-in-out infinite;
+    animation-delay: var(--delay);
+    transition: transform 0.3s ease, border-color 0.3s ease;
+  }
+
+  .tech-bubble:hover {
+    transform: scale(1.08);
+    border-color: var(--accent);
+  }
+
+  .tech-bubble img {
+    width: 40px;
+    height: 40px;
+    object-fit: contain;
+  }
+
+  .tech-bubble span {
+    font-size: 12px;
+    font-weight: 500;
+    color: var(--text-secondary);
+  }
+
+  @keyframes float {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-8px); }
+  }
+
+  /* Architecture Section */
+  .architecture-section {
+    padding: 100px 0;
+  }
+
+  .architecture-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 24px;
+  }
+
+  .architecture-card {
+    padding: 32px;
+    background: var(--bg-secondary);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+  }
+
+  .arch-header {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 20px;
+  }
+
+  .arch-icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 44px;
+    height: 44px;
+    color: var(--accent);
+    background: rgba(59, 130, 246, 0.1);
+    border-radius: 10px;
+    flex-shrink: 0;
+  }
+
+  .architecture-card h3 {
+    font-size: 18px;
+    font-weight: 600;
+    margin: 0;
+  }
+
+  .architecture-card ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+  }
+
+  .architecture-card li {
+    padding: 10px 0;
+    font-size: 14px;
+    color: var(--text-secondary);
+    border-bottom: 1px solid var(--border);
+  }
+
+  .architecture-card li:last-child {
+    border-bottom: none;
+  }
+
+  /* Differentiators Section */
+  .differentiators-section {
+    padding: 100px 0;
+    background: var(--bg-secondary);
+  }
+
+  .differentiators-list {
+    max-width: 800px;
+    margin: 0 auto;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+  }
+
+  .differentiator {
+    display: flex;
+    align-items: center;
+    gap: 24px;
+    padding: 24px 32px;
+    background: var(--bg-primary);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    transition: transform 0.3s ease, border-color 0.3s ease;
+  }
+
+  .differentiator:hover {
+    transform: translateX(8px);
+    border-color: var(--accent);
+  }
+
+  .diff-number {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 24px;
+    font-weight: 700;
+    color: var(--accent);
+  }
+
+  .differentiator p {
+    font-size: 16px;
+    color: var(--text-secondary);
+    margin: 0;
+  }
+
+  /* CTA */
+  .project-cta {
+    padding: 60px 0 120px;
+    text-align: center;
+  }
+
+  .cta-button {
+    display: inline-flex;
+    align-items: center;
+    gap: 12px;
+    padding: 18px 36px;
+    background: var(--text-primary);
+    color: var(--bg-primary);
+    border-radius: 100px;
+    font-size: 16px;
+    font-weight: 500;
+    transition: all 0.3s ease;
+  }
+
+  .cta-button:hover {
+    background: var(--accent);
+    color: white;
+    transform: translateY(-2px);
+  }
+
+  /* Responsive */
+  @media (max-width: 1024px) {
+    .scroll-container {
+      grid-template-columns: 1fr;
+      gap: 40px;
+    }
+
+    .scroll-image-container {
+      position: relative;
+      top: 0;
+      max-width: 600px;
+      margin: 0 auto;
+    }
+
+    .features-grid,
+    .algorithm-steps,
+    .architecture-grid {
+      grid-template-columns: repeat(2, 1fr);
+    }
+
+    .antidetection-grid,
+    .ai-grid {
+      grid-template-columns: repeat(2, 1fr);
+    }
+  }
+
+  @media (max-width: 768px) {
+    .features-grid,
+    .algorithm-steps,
+    .architecture-grid,
+    .antidetection-grid,
+    .ai-grid {
+      grid-template-columns: 1fr;
+    }
+
+    .content-block {
+      padding: 24px;
+    }
+
+    .content-block h2 {
+      font-size: 24px;
+    }
+
+    .section-title {
+      font-size: 26px;
+    }
+  }
+</style>

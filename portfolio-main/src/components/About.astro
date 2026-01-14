@@ -1,0 +1,549 @@
+---
+const hardSkills = [
+  {
+    category: "Frontend",
+    items: ["React", "Next.js", "Vue.js", "TypeScript", "TailwindCSS", "Astro"]
+  },
+  {
+    category: "Backend",
+    items: ["Node.js", "Python", "PostgreSQL", "MongoDB", "Redis", "GraphQL"]
+  },
+  {
+    category: "DevOps & Tools",
+    items: ["Docker", "AWS", "Git", "CI/CD", "Linux", "Nginx"]
+  },
+  {
+    category: "Security & SOC",
+    items: ["Metasploit", "Burp Suite", "Wireshark", "Nmap", "Kali Linux", "OWASP"]
+  },
+  {
+    category: "SIEM & Monitoring",
+    items: ["ELK Stack", "Wazuh", "Splunk", "Grafana", "Kibana", "Logstash"]
+  }
+];
+
+const softSkills = [
+  "Autonomie",
+  "Autodidacte",
+  "Résolution de problèmes",
+  "Communication",
+  "Adaptabilité",
+  "Rigueur",
+  "Esprit d'analyse",
+  "Gestion de projet"
+];
+
+const parcours = [
+  {
+    diplome: "Master 2 Cybersécurité",
+    ecole: "Spécialisation sécurité des SI",
+    periode: "2023 - 2024"
+  },
+  {
+    diplome: "Master 1 Ingénierie des SI",
+    ecole: "Systèmes d'information",
+    periode: "2022 - 2023"
+  }
+];
+---
+
+<section class="about" id="about">
+  <!-- Background text -->
+  <div class="section-bg-text" aria-hidden="true">
+    <span data-scroll-text-about>ABOUT</span>
+  </div>
+
+  <div class="container">
+    <div class="about-grid">
+      <!-- Left column - Info -->
+      <div class="about-content">
+        <header class="section-header" data-animate-about="header">
+          <span class="section-tag font-mono">À propos</span>
+          <h2 class="section-title">
+            <span class="title-reveal">Qui</span>
+            <span class="title-reveal">suis-je</span>
+          </h2>
+        </header>
+
+        <div class="about-text" data-animate-about="text">
+          <p>
+            <strong>Ingénieur Développement & Sécurité Informatique</strong>, je conçois
+            des solutions sur mesure : du site vitrine statique aux applications SaaS
+            complexes et dynamiques.
+          </p>
+          <p>
+            Autonome et autodidacte, j'aime me confronter à de nouveaux défis et
+            apprendre davantage. Chaque projet est une opportunité d'explorer
+            de nouvelles technologies et de repousser mes limites.
+          </p>
+          <p>
+            J'accompagne les indépendants et entreprises tout au long du développement
+            pour créer des solutions qui correspondent parfaitement à leurs besoins,
+            avec une attention particulière à la sécurité et la performance.
+          </p>
+        </div>
+
+        <!-- Parcours -->
+        <div class="parcours" data-animate-about="parcours">
+          <h3 class="subsection-title">Formation</h3>
+          <div class="parcours-list">
+            {parcours.map((p, index) => (
+              <div class="parcours-item" data-index={index}>
+                <div class="parcours-header">
+                  <span class="parcours-diplome">{p.diplome}</span>
+                  <span class="parcours-periode font-mono">{p.periode}</span>
+                </div>
+                <span class="parcours-ecole">{p.ecole}</span>
+              </div>
+            ))}
+          </div>
+        </div>
+
+        <!-- Soft Skills -->
+        <div class="soft-skills" data-animate-about="soft">
+          <h3 class="subsection-title">Soft Skills</h3>
+          <div class="soft-skills-list">
+            {softSkills.map((skill) => (
+              <span class="soft-skill-item">{skill}</span>
+            ))}
+          </div>
+        </div>
+      </div>
+
+      <!-- Right column - Hard Skills -->
+      <div class="about-skills" data-animate-about="skills">
+        <h3 class="subsection-title">Hard Skills</h3>
+
+        <div class="skills-container">
+          {hardSkills.map((skillGroup, groupIndex) => (
+            <div class="skill-group" data-group={groupIndex}>
+              <h4 class="skill-category font-mono">{skillGroup.category}</h4>
+              <div class="skill-items">
+                {skillGroup.items.map((skill) => (
+                  <span class="skill-item">{skill}</span>
+                ))}
+              </div>
+            </div>
+          ))}
+        </div>
+
+        <!-- Stats -->
+       
+      </div>
+    </div>
+  </div>
+</section>
+
+<script>
+  import { gsap } from 'gsap';
+  import { ScrollTrigger } from 'gsap/ScrollTrigger';
+
+  gsap.registerPlugin(ScrollTrigger);
+
+  document.addEventListener('DOMContentLoaded', () => {
+    const aboutSection = document.querySelector('.about');
+
+    // Title animation
+    gsap.fromTo('.about .title-reveal',
+      { y: 80, opacity: 0, rotateX: -30 },
+      {
+        y: 0,
+        opacity: 1,
+        rotateX: 0,
+        duration: 1,
+        stagger: 0.1,
+        ease: 'power4.out',
+        scrollTrigger: {
+          trigger: aboutSection,
+          start: 'top 75%',
+        }
+      }
+    );
+
+    // Tag
+    gsap.fromTo('.about .section-tag',
+      { opacity: 0, y: 20 },
+      {
+        opacity: 1,
+        y: 0,
+        duration: 0.8,
+        scrollTrigger: {
+          trigger: aboutSection,
+          start: 'top 80%',
+        }
+      }
+    );
+
+    // Text paragraphs
+    gsap.fromTo('.about-text p',
+      { opacity: 0, y: 30 },
+      {
+        opacity: 1,
+        y: 0,
+        duration: 0.8,
+        stagger: 0.15,
+        scrollTrigger: {
+          trigger: '.about-text',
+          start: 'top 80%',
+        }
+      }
+    );
+
+    // Parcours items
+    gsap.fromTo('.parcours-item',
+      { opacity: 0, x: -40 },
+      {
+        opacity: 1,
+        x: 0,
+        duration: 0.8,
+        stagger: 0.15,
+        scrollTrigger: {
+          trigger: '.parcours',
+          start: 'top 80%',
+        }
+      }
+    );
+
+    // Soft skills
+    gsap.fromTo('.soft-skill-item',
+      { opacity: 0, scale: 0.8 },
+      {
+        opacity: 1,
+        scale: 1,
+        duration: 0.5,
+        stagger: 0.05,
+        ease: 'back.out(1.7)',
+        scrollTrigger: {
+          trigger: '.soft-skills',
+          start: 'top 85%',
+        }
+      }
+    );
+
+    // Skill groups
+    gsap.fromTo('.skill-group',
+      { opacity: 0, y: 40 },
+      {
+        opacity: 1,
+        y: 0,
+        duration: 0.8,
+        stagger: 0.1,
+        scrollTrigger: {
+          trigger: '.skills-container',
+          start: 'top 80%',
+        }
+      }
+    );
+
+    // Stats
+    gsap.fromTo('.stat-item',
+      { opacity: 0, scale: 0.8 },
+      {
+        opacity: 1,
+        scale: 1,
+        duration: 0.6,
+        stagger: 0.1,
+        ease: 'back.out(1.7)',
+        scrollTrigger: {
+          trigger: '.stats',
+          start: 'top 85%',
+        }
+      }
+    );
+
+    // Background text parallax
+    gsap.to('[data-scroll-text-about]', {
+      scrollTrigger: {
+        trigger: aboutSection,
+        start: 'top bottom',
+        end: 'bottom top',
+        scrub: 1,
+      },
+      x: -150,
+      ease: 'none',
+    });
+  });
+</script>
+
+<style>
+  .about {
+    padding: 150px 0;
+    position: relative;
+    overflow: hidden;
+  }
+
+  /* Background text */
+  .section-bg-text {
+    position: absolute;
+    top: 50%;
+    right: 0;
+    transform: translateY(-50%);
+    pointer-events: none;
+    z-index: 0;
+    overflow: visible;
+  }
+
+  .section-bg-text span {
+    font-size: clamp(100px, 25vw, 300px);
+    font-weight: 900;
+    letter-spacing: -0.05em;
+    color: transparent;
+    -webkit-text-stroke: 1px rgba(255, 255, 255, 0.03);
+    white-space: nowrap;
+    display: block;
+    text-align: right;
+    padding-right: 5%;
+  }
+
+  .container {
+    position: relative;
+    z-index: 1;
+  }
+
+  .about-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 60px;
+  }
+
+  @media (min-width: 1024px) {
+    .about-grid {
+      grid-template-columns: 1.2fr 1fr;
+      gap: 80px;
+    }
+  }
+
+  .section-header {
+    margin-bottom: 40px;
+  }
+
+  .section-tag {
+    display: inline-block;
+    font-size: 12px;
+    color: var(--accent);
+    text-transform: uppercase;
+    letter-spacing: 0.25em;
+    margin-bottom: 20px;
+    padding: 8px 16px;
+    border: 1px solid rgba(59, 130, 246, 0.3);
+    border-radius: 100px;
+    background: rgba(59, 130, 246, 0.05);
+  }
+
+  .section-title {
+    font-size: clamp(40px, 8vw, 64px);
+    font-weight: 700;
+    letter-spacing: -0.04em;
+    margin: 0;
+    line-height: 1.1;
+    overflow: hidden;
+  }
+
+  .title-reveal {
+    display: inline-block;
+    will-change: transform, opacity;
+  }
+
+  .about-text {
+    margin-bottom: 48px;
+  }
+
+  .about-text p {
+    font-size: 17px;
+    line-height: 1.8;
+    color: var(--text-secondary);
+    margin: 0 0 20px;
+  }
+
+  .about-text p:last-child {
+    margin-bottom: 0;
+  }
+
+  .subsection-title {
+    font-size: 12px;
+    font-weight: 500;
+    color: var(--text-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.15em;
+    margin: 0 0 24px;
+    padding-bottom: 12px;
+    border-bottom: 1px solid var(--border);
+  }
+
+  /* Parcours */
+  .parcours {
+    margin-bottom: 32px;
+  }
+
+  .parcours-list {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+  }
+
+  .parcours-item {
+    padding: 20px;
+    background: var(--bg-secondary);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    transition:
+      border-color 0.4s cubic-bezier(0.19, 1, 0.22, 1),
+      transform 0.4s cubic-bezier(0.19, 1, 0.22, 1);
+  }
+
+  .parcours-item:hover {
+    border-color: var(--border-hover);
+    transform: translateX(8px);
+  }
+
+  .parcours-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 16px;
+    margin-bottom: 4px;
+  }
+
+  .parcours-diplome {
+    font-size: 16px;
+    font-weight: 600;
+  }
+
+  .parcours-periode {
+    font-size: 11px;
+    color: var(--text-muted);
+    flex-shrink: 0;
+    padding: 4px 10px;
+    background: var(--bg-tertiary);
+    border-radius: 4px;
+  }
+
+  .parcours-ecole {
+    font-size: 13px;
+    color: var(--accent);
+    display: block;
+  }
+
+  /* Soft Skills */
+  .soft-skills-list {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+  }
+
+  .soft-skill-item {
+    padding: 10px 18px;
+    background: linear-gradient(135deg, rgba(59, 130, 246, 0.1), rgba(59, 130, 246, 0.05));
+    border: 1px solid rgba(59, 130, 246, 0.2);
+    border-radius: 100px;
+    font-size: 13px;
+    color: var(--text-secondary);
+    transition:
+      background 0.3s ease,
+      border-color 0.3s ease,
+      transform 0.3s ease;
+  }
+
+  .soft-skill-item:hover {
+    background: rgba(59, 130, 246, 0.15);
+    border-color: var(--accent);
+    transform: translateY(-2px);
+  }
+
+  /* Skills */
+  .about-skills {
+    position: relative;
+  }
+
+  @media (min-width: 1024px) {
+    .about-skills {
+      padding-left: 40px;
+      border-left: 1px solid var(--border);
+    }
+  }
+
+  .skills-container {
+    display: flex;
+    flex-direction: column;
+    gap: 28px;
+    margin-bottom: 48px;
+  }
+
+  .skill-category {
+    font-size: 11px;
+    color: var(--accent);
+    text-transform: uppercase;
+    letter-spacing: 0.2em;
+    margin: 0 0 12px;
+  }
+
+  .skill-items {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+
+  .skill-item {
+    padding: 8px 14px;
+    background: var(--bg-secondary);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    font-size: 13px;
+    color: var(--text-secondary);
+    transition:
+      background 0.3s cubic-bezier(0.19, 1, 0.22, 1),
+      border-color 0.3s cubic-bezier(0.19, 1, 0.22, 1),
+      color 0.3s cubic-bezier(0.19, 1, 0.22, 1),
+      transform 0.3s cubic-bezier(0.19, 1, 0.22, 1);
+  }
+
+  .skill-item:hover {
+    background: var(--bg-tertiary);
+    border-color: var(--accent);
+    color: var(--text-primary);
+    transform: translateY(-2px);
+  }
+
+  /* Stats */
+  .stats {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 16px;
+  }
+
+  .stat-item {
+    text-align: center;
+    padding: 24px 12px;
+    background: var(--bg-secondary);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    transition:
+      transform 0.4s cubic-bezier(0.19, 1, 0.22, 1),
+      border-color 0.4s cubic-bezier(0.19, 1, 0.22, 1);
+  }
+
+  .stat-item:hover {
+    transform: translateY(-4px);
+    border-color: var(--border-hover);
+  }
+
+  .stat-number {
+    display: block;
+    font-size: 32px;
+    font-weight: 700;
+    letter-spacing: -0.03em;
+    margin-bottom: 6px;
+    background: linear-gradient(135deg, var(--text-primary), var(--accent));
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+  }
+
+  .stat-label {
+    font-size: 11px;
+    color: var(--text-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    line-height: 1.4;
+  }
+</style>

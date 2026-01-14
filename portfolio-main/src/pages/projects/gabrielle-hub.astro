@@ -1,0 +1,538 @@
+---
+import ProjectLayout from '../../layouts/ProjectLayout.astro';
+import Header from '../../components/Header.astro';
+import Footer from '../../components/Footer.astro';
+
+const base = import.meta.env.BASE_URL;
+
+const features = [
+  {
+    title: "Guide des Tailles",
+    description: "Module interactif pour aider les clientes à trouver leur taille idéale en quelques clics"
+  },
+  {
+    title: "Collections Femmes & Hommes",
+    description: "Catégories distinctes avec des pièces élégantes pour chaque univers"
+  },
+  {
+    title: "Fiches Produits Détaillées",
+    description: "Chaque pièce est présentée avec photos haute qualité et description complète"
+  },
+  {
+    title: "Prise de Rendez-vous",
+    description: "Réservation en ligne pour une expérience personnalisée en boutique"
+  },
+];
+
+const values = [
+  {
+    icon: `<svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M11 20A7 7 0 0 1 9.8 6.1C15.5 5 17 4.48 19 2c1 2 2 4.18 2 8 0 5.5-4.78 10-10 10Z"/><path d="M2 21c0-3 1.85-5.36 5.08-6C9.5 14.52 12 13 13 12"/></svg>`,
+    title: "Matières Écologiques",
+    description: "Les tissus sont issus de l'agriculture biologique ou de fibres recyclées, permettant de réduire considérablement l'empreinte environnementale de la marque."
+  },
+  {
+    icon: `<svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M18 11V6a2 2 0 0 0-2-2a2 2 0 0 0-2 2"/><path d="M14 10V4a2 2 0 0 0-2-2a2 2 0 0 0-2 2v2"/><path d="M10 10.5V6a2 2 0 0 0-2-2a2 2 0 0 0-2 2v8"/><path d="M18 8a2 2 0 1 1 4 0v6a8 8 0 0 1-8 8h-2c-2.8 0-4.5-.86-5.99-2.34l-3.6-3.6a2 2 0 0 1 2.83-2.82L7 15"/></svg>`,
+    title: "Fabrication Éthique",
+    description: "Chaque pièce est confectionnée dans des ateliers locaux respectant des conditions de travail justes et équitables pour tous les artisans."
+  },
+  {
+    icon: `<svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12a9 9 0 0 0-9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/><path d="M3 3v5h5"/><path d="M3 12a9 9 0 0 0 9 9 9.75 9.75 0 0 0 6.74-2.74L21 16"/><path d="M16 16h5v5"/></svg>`,
+    title: "Zéro Déchet",
+    description: "Le processus de production est optimisé pour minimiser les chutes de tissu, et les emballages sont entièrement biodégradables ou recyclables."
+  },
+  {
+    icon: `<svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z"/></svg>`,
+    title: "Inclusivité",
+    description: "Gabriel.le célèbre la diversité des corps en proposant une gamme adaptée à toutes les morphologies, car la lingerie doit être un plaisir accessible à tous."
+  },
+];
+
+const techStack = [
+  { name: "Astro", logo: "https://astro.build/assets/press/astro-icon-light-gradient.svg" },
+  { name: "TypeScript", logo: "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/typescript/typescript-original.svg" },
+  { name: "TailwindCSS", logo: "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/tailwindcss/tailwindcss-original.svg" },
+  { name: "GSAP", logo: "https://cdn.worldvectorlogo.com/logos/gsap-greensock.svg" },
+];
+---
+
+<ProjectLayout title="Gabriel.le - Lingerie de Luxe" description="Site vitrine pour une marque de lingerie de luxe éco-responsable">
+  <Header />
+
+  <main class="project-page">
+    <!-- Hero -->
+    <section class="project-hero">
+      <div class="container">
+        <a href={`${base}#projects`} class="back-link">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M19 12H5M12 19l-7-7 7-7"/>
+          </svg>
+          <span>Retour aux projets</span>
+        </a>
+
+        <div class="project-hero-content">
+          <span class="project-tag font-mono">Site Vitrine</span>
+          <h1 class="project-title">Gabriel.le</h1>
+          <p class="project-subtitle">Site vitrine élégant pour une marque de lingerie de luxe éco-responsable</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- Full Width Image -->
+    <section class="showcase-section">
+      <div class="showcase-image">
+        <img src="/projects/gabrielle-hub.png" alt="Gabriel.le Interface" />
+      </div>
+    </section>
+
+    <!-- Description -->
+    <section class="description-section">
+      <div class="container">
+        <div class="description-content">
+          <h2>Une expérience digitale à l'image de la marque</h2>
+          <p>
+            Gabriel.le est un <em>site vitrine</em> conçu pour sublimer l'univers d'une marque de
+            <em>lingerie de luxe éco-responsable</em>. Chaque détail a été pensé pour refléter
+            l'élégance, le raffinement et les valeurs éthiques de la marque.
+          </p>
+          <p>
+            Le design respecte une <em>palette de couleurs soigneusement sélectionnée</em>,
+            offrant une navigation fluide et intuitive avec des <em>scrolls élégants</em>.
+            Les visiteurs peuvent découvrir les collections femmes et hommes, consulter les
+            fiches produits détaillées et réserver un rendez-vous en boutique.
+          </p>
+          <p>
+            Un <em>module de guide des tailles</em> interactif accompagne les clientes dans
+            leur choix, garantissant une expérience d'achat personnalisée et sans stress.
+          </p>
+        </div>
+      </div>
+    </section>
+
+    <!-- Features -->
+    <section class="features-section">
+      <div class="container">
+        <h2 class="section-title">Fonctionnalités</h2>
+        <div class="features-grid">
+          {features.map((feature) => (
+            <div class="feature-card">
+              <h3>{feature.title}</h3>
+              <p>{feature.description}</p>
+            </div>
+          ))}
+        </div>
+      </div>
+    </section>
+
+    <!-- Values -->
+    <section class="values-section">
+      <div class="container">
+        <h2 class="section-title">Les Valeurs de Gabriel.le</h2>
+        <p class="section-subtitle">Une marque engagée pour un luxe responsable</p>
+        <div class="values-grid">
+          {values.map((value) => (
+            <div class="value-card">
+              <span class="value-icon" set:html={value.icon}></span>
+              <h3>{value.title}</h3>
+              <p>{value.description}</p>
+            </div>
+          ))}
+        </div>
+      </div>
+    </section>
+
+    <!-- Design -->
+    <section class="design-section">
+      <div class="container">
+        <div class="design-content">
+          <h2>Un Design Élégant et Raffiné</h2>
+          <p>
+            L'interface de Gabriel.le a été pensée pour offrir une <em>expérience immersive</em>
+            et haut de gamme. Les animations fluides, les transitions soignées et la typographie
+            élégante créent une atmosphère luxueuse qui reflète l'identité de la marque.
+          </p>
+          <p>
+            Chaque interaction a été optimisée pour garantir une <em>navigation intuitive</em>
+            sur tous les appareils, du desktop au mobile, sans jamais compromettre l'esthétique
+            ou la performance.
+          </p>
+        </div>
+      </div>
+    </section>
+
+    <!-- Stack Technique -->
+    <section class="tech-section">
+      <div class="container">
+        <h2 class="tech-title">Stack Technique</h2>
+        <div class="tech-bubbles">
+          {techStack.map((tech, index) => (
+            <div class="tech-bubble" style={`--delay: ${index * 0.5}s; --float-duration: ${3 + (index % 3)}s;`}>
+              <img src={tech.logo} alt={tech.name} />
+              <span>{tech.name}</span>
+            </div>
+          ))}
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <Footer />
+</ProjectLayout>
+
+<style>
+  .project-page {
+    min-height: 100vh;
+    padding-top: 120px;
+  }
+
+  .container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 24px;
+  }
+
+  /* Back link */
+  .back-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    color: var(--text-secondary);
+    font-size: 14px;
+    margin-bottom: 40px;
+    transition: color 0.3s ease;
+  }
+
+  .back-link:hover {
+    color: var(--text-primary);
+  }
+
+  /* Hero */
+  .project-hero {
+    padding-bottom: 60px;
+  }
+
+  .project-hero-content {
+    max-width: 800px;
+  }
+
+  .project-tag {
+    display: inline-block;
+    font-size: 12px;
+    color: var(--accent);
+    text-transform: uppercase;
+    letter-spacing: 0.25em;
+    margin-bottom: 20px;
+    padding: 8px 16px;
+    border: 1px solid rgba(59, 130, 246, 0.3);
+    border-radius: 100px;
+    background: rgba(59, 130, 246, 0.05);
+  }
+
+  .project-title {
+    font-size: clamp(48px, 8vw, 80px);
+    font-weight: 700;
+    letter-spacing: -0.04em;
+    margin: 0 0 24px;
+    line-height: 1.1;
+  }
+
+  .project-subtitle {
+    font-size: 20px;
+    line-height: 1.6;
+    color: var(--text-secondary);
+    margin: 0;
+  }
+
+  /* Showcase - Full Width Image */
+  .showcase-section {
+    padding: 0 0 100px;
+  }
+
+  .showcase-image {
+    width: 100%;
+    max-width: 1400px;
+    margin: 0 auto;
+    padding: 0 24px;
+  }
+
+  .showcase-image img {
+    width: 100%;
+    height: auto;
+    border-radius: 24px;
+    box-shadow:
+      0 4px 6px -1px rgba(0, 0, 0, 0.3),
+      0 20px 40px -10px rgba(0, 0, 0, 0.5),
+      0 0 0 1px rgba(255, 255, 255, 0.05);
+  }
+
+  /* Section Title */
+  .section-title {
+    font-size: 32px;
+    font-weight: 700;
+    text-align: center;
+    margin: 0 0 16px;
+    letter-spacing: -0.02em;
+  }
+
+  .section-subtitle {
+    font-size: 18px;
+    color: var(--text-secondary);
+    text-align: center;
+    margin: 0 0 48px;
+  }
+
+  /* Description */
+  .description-section {
+    padding: 80px 0;
+  }
+
+  .description-content {
+    max-width: 800px;
+    margin: 0 auto;
+    text-align: center;
+  }
+
+  .description-content h2 {
+    font-size: 32px;
+    font-weight: 700;
+    margin: 0 0 32px;
+    letter-spacing: -0.02em;
+  }
+
+  .description-content p {
+    font-size: 18px;
+    line-height: 1.9;
+    color: var(--text-secondary);
+    margin: 0 0 24px;
+  }
+
+  .description-content p:last-child {
+    margin-bottom: 0;
+  }
+
+  .description-content em {
+    color: var(--text-primary);
+    font-style: italic;
+    font-weight: 500;
+  }
+
+  /* Features */
+  .features-section {
+    padding: 80px 0;
+    background: var(--bg-secondary);
+  }
+
+  .features-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 24px;
+    margin-top: 48px;
+  }
+
+  .feature-card {
+    padding: 40px;
+    background: var(--bg-primary);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    transition: transform 0.3s ease, border-color 0.3s ease;
+  }
+
+  .feature-card:hover {
+    transform: translateY(-4px);
+    border-color: var(--accent);
+  }
+
+  .feature-card h3 {
+    font-size: 20px;
+    font-weight: 600;
+    margin: 0 0 12px;
+  }
+
+  .feature-card p {
+    font-size: 15px;
+    line-height: 1.7;
+    color: var(--text-secondary);
+    margin: 0;
+  }
+
+  /* Values */
+  .values-section {
+    padding: 100px 0;
+  }
+
+  .values-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 32px;
+  }
+
+  .value-card {
+    padding: 40px;
+    background: var(--bg-secondary);
+    border: 1px solid var(--border);
+    border-radius: 20px;
+    text-align: center;
+    transition: transform 0.3s ease, border-color 0.3s ease, box-shadow 0.3s ease;
+  }
+
+  .value-card:hover {
+    transform: translateY(-6px);
+    border-color: var(--accent);
+    box-shadow: 0 20px 40px -15px rgba(59, 130, 246, 0.15);
+  }
+
+  .value-icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 64px;
+    height: 64px;
+    margin: 0 auto 20px;
+    color: var(--accent);
+    background: rgba(59, 130, 246, 0.1);
+    border-radius: 16px;
+  }
+
+  .value-icon :global(svg) {
+    width: 32px;
+    height: 32px;
+  }
+
+  .value-card h3 {
+    font-size: 20px;
+    font-weight: 600;
+    margin: 0 0 16px;
+  }
+
+  .value-card p {
+    font-size: 15px;
+    line-height: 1.8;
+    color: var(--text-secondary);
+    margin: 0;
+  }
+
+  /* Design Section */
+  .design-section {
+    padding: 80px 0;
+    background: linear-gradient(180deg, var(--bg-secondary) 0%, var(--bg-primary) 100%);
+  }
+
+  .design-content {
+    max-width: 800px;
+    margin: 0 auto;
+    text-align: center;
+  }
+
+  .design-content h2 {
+    font-size: 32px;
+    font-weight: 700;
+    margin: 0 0 32px;
+    letter-spacing: -0.02em;
+  }
+
+  .design-content p {
+    font-size: 18px;
+    line-height: 1.9;
+    color: var(--text-secondary);
+    margin: 0 0 24px;
+  }
+
+  .design-content p:last-child {
+    margin-bottom: 0;
+  }
+
+  .design-content em {
+    color: var(--text-primary);
+    font-style: italic;
+    font-weight: 500;
+  }
+
+  /* Tech Section */
+  .tech-section {
+    padding: 80px 0 120px;
+    text-align: center;
+  }
+
+  .tech-title {
+    font-size: 28px;
+    font-weight: 700;
+    margin: 0 0 40px;
+  }
+
+  .tech-bubbles {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 20px;
+  }
+
+  .tech-bubble {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
+    padding: 20px 28px;
+    background: var(--bg-secondary);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    animation: float var(--float-duration) ease-in-out infinite;
+    animation-delay: var(--delay);
+    transition: transform 0.3s ease, border-color 0.3s ease;
+  }
+
+  .tech-bubble:hover {
+    transform: scale(1.08);
+    border-color: var(--accent);
+  }
+
+  .tech-bubble img {
+    width: 40px;
+    height: 40px;
+    object-fit: contain;
+  }
+
+  .tech-bubble span {
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--text-secondary);
+  }
+
+  @keyframes float {
+    0%, 100% {
+      transform: translateY(0);
+    }
+    50% {
+      transform: translateY(-8px);
+    }
+  }
+
+  /* Responsive */
+  @media (max-width: 900px) {
+    .features-grid,
+    .values-grid {
+      grid-template-columns: 1fr;
+      gap: 16px;
+    }
+
+    .feature-card,
+    .value-card {
+      padding: 28px;
+    }
+  }
+
+  @media (max-width: 768px) {
+    .description-content h2,
+    .design-content h2,
+    .section-title {
+      font-size: 26px;
+    }
+
+    .description-content p,
+    .design-content p {
+      font-size: 16px;
+    }
+
+    .value-icon {
+      font-size: 36px;
+    }
+  }
+</style>

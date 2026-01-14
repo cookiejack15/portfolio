@@ -1,0 +1,1217 @@
+---
+import ProjectLayout from '../../layouts/ProjectLayout.astro';
+
+const base = import.meta.env.BASE_URL;
+
+// Bug Bounty Reports - Anonymized
+const bugBountyReports = [
+  {
+    id: "ssrf-bypass",
+    title: "SSRF Protection Bypass via Host Header",
+    severity: "High",
+    category: "Server-Side Request Forgery",
+    summary: "Contournement d'une protection anti-SSRF en manipulant le header Host de la requête HTTP.",
+    reasoning: `Le produit de sécurité analysé intégrait un système de protection SSRF qui validait les URLs fournies par les utilisateurs.
+
+L'approche de test a commencé par l'identification du comportement de validation : le système vérifiait si l'URL pointait vers des ressources internes (localhost, 127.0.0.1, plages privées).
+
+La méthodologie de contournement a exploité une subtilité dans le traitement des requêtes HTTP : lorsqu'un proxy ou un middleware traite une requête, le header "Host" peut être interprété différemment de l'URL cible.
+
+En envoyant une requête où l'URL semblait légitime mais le header Host pointait vers une ressource interne, la validation passait sur l'URL tandis que la requête effective utilisait le Host header, permettant d'atteindre des services internes.`,
+    impact: "Accès à des services internes non exposés, potentielle lecture de métadonnées cloud (AWS/GCP), pivoting vers d'autres services du réseau interne.",
+    methodology: ["Analyse du comportement de validation", "Identification des vecteurs de parsing différentiel", "Exploitation du décalage URL/Host header"],
+    fixes: [
+      "Valider l'URL ET le Host header de manière synchronisée",
+      "Implémenter une allowlist stricte des domaines autorisés",
+      "Utiliser un resolver DNS interne pour bloquer les IP privées"
+    ]
+  },
+  {
+    id: "graphql-disclosure",
+    title: "GraphQL Mass Data Exposure",
+    severity: "Critical",
+    category: "Information Disclosure",
+    summary: "Exposition de données utilisateurs via introspection GraphQL et mutations non authentifiées.",
+    reasoning: `L'analyse a débuté par une reconnaissance de l'API GraphQL exposée. La première étape a été de tester si l'introspection était activée — une fonctionnalité souvent laissée active en production par erreur.
+
+L'introspection a révélé l'intégralité du schéma, incluant des types et des champs qui n'étaient pas censés être accessibles publiquement.
+
+En analysant le schéma, plusieurs requêtes ont été identifiées comme potentiellement dangereuses. Une requête de listing d'utilisateurs ne vérifiait pas l'authentification, permettant d'énumérer plus de 10 000 utilisateurs avec leurs données personnelles.
+
+Plus critique encore, certaines mutations (opérations d'écriture) étaient également accessibles sans authentification, permettant potentiellement de modifier des données.`,
+    impact: "Exposition de 10 907+ comptes utilisateurs (emails, noms, données personnelles), possibilité de modification non autorisée via mutations, violation RGPD majeure.",
+    methodology: ["Test d'introspection GraphQL", "Analyse du schéma exposé", "Identification des endpoints sans authentification", "Validation de l'impact réel"],
+    fixes: [
+      "Désactiver l'introspection en production (NODE_ENV=production)",
+      "Implémenter des directives @auth sur chaque résolveur",
+      "Ajouter du rate limiting et de la pagination obligatoire",
+      "Monitorer les requêtes avec des outils comme Apollo Studio"
+    ]
+  },
+  {
+    id: "rce-injection",
+    title: "Authenticated RCE via Command Injection",
+    severity: "Critical",
+    category: "Remote Code Execution",
+    summary: "Exécution de code arbitraire via injection de commandes dans un paramètre de configuration.",
+    reasoning: `L'interface d'administration du système embarqué permettait de configurer certains paramètres réseau. L'analyse du trafic HTTP a révélé que ces paramètres étaient passés à des scripts CGI côté serveur.
+
+L'hypothèse de travail était que ces paramètres pouvaient être utilisés dans des commandes shell sans sanitisation adéquate.
+
+Le test initial a utilisé des techniques de time-based injection : en injectant un payload de type "sleep", le temps de réponse du serveur a confirmé l'exécution de la commande.
+
+L'injection était possible dans un paramètre "name" qui était concaténé directement dans une commande shell. Les caractères spéciaux comme le point-virgule et les backticks n'étaient pas filtrés.
+
+La validation finale a utilisé une technique d'exfiltration out-of-band pour confirmer l'exécution de code avec les privilèges du service web.`,
+    impact: "Exécution de code arbitraire avec les privilèges du service web, compromission complète du système, potentiel pivot vers le réseau interne.",
+    methodology: ["Analyse des endpoints d'administration", "Identification des paramètres injectables", "Confirmation via time-based testing", "Validation avec exfiltration OOB"],
+    fixes: [
+      "Utiliser des APIs système (execFile) au lieu de shell commands",
+      "Échapper tous les paramètres avec des librairies dédiées",
+      "Implémenter une whitelist de caractères alphanumériques",
+      "Exécuter les services avec des privilèges minimaux (principe du moindre privilège)"
+    ]
+  },
+  {
+    id: "crlf-injection",
+    title: "CRLF Injection for Parameter Tampering",
+    severity: "Medium",
+    category: "Injection",
+    summary: "Injection de paramètres via caractères CRLF permettant de contourner des validations.",
+    reasoning: `En analysant l'API de configuration, une observation intéressante a émergé : le serveur parsait les paramètres d'une manière qui pouvait être exploitée.
+
+Le test a consisté à injecter des caractères de nouvelle ligne (\\r\\n) dans une valeur de paramètre. L'hypothèse était que le parser côté serveur interpréterait les lignes suivantes comme de nouveaux paramètres.
+
+Cette technique de "parameter pollution" via CRLF a permis d'injecter des paramètres additionnels qui n'auraient normalement pas été acceptés par le client.
+
+Dans ce cas spécifique, un paramètre de configuration sensible était validé côté client mais le contournement permettait de le définir directement côté serveur.`,
+    impact: "Contournement de validations client-side, modification de paramètres protégés, potentielle escalade vers d'autres vulnérabilités.",
+    methodology: ["Analyse du comportement de parsing", "Test d'injection CRLF", "Identification des paramètres injectables", "Validation de l'impact"],
+    fixes: [
+      "Filtrer les caractères \\r et \\n dans tous les inputs",
+      "Valider chaque paramètre côté serveur (jamais faire confiance au client)",
+      "Utiliser un parser de paramètres robuste et testé",
+      "Implémenter des tests de fuzzing sur les endpoints sensibles"
+    ]
+  }
+];
+
+const securityServices = [
+  {
+    title: "Application Web Security",
+    description: "Tests d'intrusion et hardening d'applications web. Identification des vulnérabilités OWASP Top 10, analyse de code, et recommandations de remédiation.",
+    icon: `<svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+      <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+      <path d="M12 8v4M12 16h.01"/>
+    </svg>`,
+    status: "Activité actuelle",
+    details: ["Pentest web & API", "Revue de code sécurité", "OWASP Top 10", "Hardening applicatif"]
+  },
+  {
+    title: "SOC Design & Architecture",
+    description: "Conception d'un Security Operations Center moderne. Architecture SIEM, playbooks de réponse aux incidents, et intégration de sources de logs.",
+    icon: `<svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+      <rect x="2" y="3" width="20" height="14" rx="2"/>
+      <path d="M8 21h8M12 17v4"/>
+      <path d="M6 8h.01M9 8h.01M6 11h.01"/>
+    </svg>`,
+    status: "Projet Master",
+    details: ["Architecture SIEM", "Threat Intelligence", "Incident Response", "Log Management"]
+  }
+];
+---
+
+<ProjectLayout title="Cyber Security | Ismail Chiba" description="Expertise en sécurité informatique - Pentest, Bug Bounty, SOC Design">
+  <!-- Navigation -->
+  <nav class="project-nav">
+    <a href={base} class="nav-back">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <path d="M19 12H5M12 19l-7-7 7-7"/>
+      </svg>
+      <span>Retour</span>
+    </a>
+    <div class="nav-breadcrumb font-mono">
+      <a href={`${base}#projects`}>Expertises</a>
+      <span>/</span>
+      <span class="current">Cyber Security</span>
+    </div>
+  </nav>
+
+  <!-- Animated Background -->
+  <div class="cyber-bg">
+    <div class="grid-overlay"></div>
+    <div class="floating-elements">
+      <div class="hex hex-1">&#x2B22;</div>
+      <div class="hex hex-2">&#x2B22;</div>
+      <div class="hex hex-3">&#x2B22;</div>
+      <div class="binary binary-1">01001</div>
+      <div class="binary binary-2">11010</div>
+      <div class="binary binary-3">00110</div>
+    </div>
+    <!-- Red Dust Particles -->
+    <div class="dust-container">
+      <div class="dust dust-1"></div>
+      <div class="dust dust-2"></div>
+      <div class="dust dust-3"></div>
+      <div class="dust dust-4"></div>
+      <div class="dust dust-5"></div>
+      <div class="dust dust-6"></div>
+      <div class="dust dust-7"></div>
+      <div class="dust dust-8"></div>
+      <div class="dust dust-9"></div>
+      <div class="dust dust-10"></div>
+      <div class="dust dust-11"></div>
+      <div class="dust dust-12"></div>
+      <div class="dust dust-13"></div>
+      <div class="dust dust-14"></div>
+      <div class="dust dust-15"></div>
+      <div class="dust dust-16"></div>
+      <div class="dust dust-17"></div>
+      <div class="dust dust-18"></div>
+      <div class="dust dust-19"></div>
+      <div class="dust dust-20"></div>
+    </div>
+  </div>
+
+  <!-- Hero Section -->
+  <section class="security-hero">
+    <div class="hero-bg-pattern"></div>
+    <div class="container">
+      <div class="hero-badge" data-animate="badge">
+        <span class="badge-icon">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+          </svg>
+        </span>
+        <span class="badge-text font-mono">Cyber Security</span>
+      </div>
+
+      <h1 class="hero-title" data-animate="title">
+        Offensive Security<br/>& Threat Research
+      </h1>
+
+      <p class="hero-description" data-animate="desc">
+        Une approche offensive pour une défense solide. Tests d'intrusion, recherche de vulnérabilités,
+        et conception de systèmes de détection. Chaque faille découverte est une opportunité
+        d'améliorer la sécurité.
+      </p>
+
+      <div class="hero-stats" data-animate="stats">
+        <div class="stat">
+          <span class="stat-value">4+</span>
+          <span class="stat-label">Vulnérabilités reportées</span>
+        </div>
+        <div class="stat">
+          <span class="stat-value">OWASP</span>
+          <span class="stat-label">Top 10 expertise</span>
+        </div>
+        <div class="stat">
+          <span class="stat-value">SOC</span>
+          <span class="stat-label">Architecture</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Services Section -->
+  <section class="services-section">
+    <div class="container">
+      <h2 class="section-title" data-animate="services-title">Domaines d'expertise</h2>
+
+      <div class="services-grid">
+        {securityServices.map((service, index) => (
+          <div class="service-card" data-animate="service" data-index={index}>
+            <div class="service-header">
+              <div class="service-icon" set:html={service.icon} />
+              <span class="service-status font-mono">{service.status}</span>
+            </div>
+
+            <h3 class="service-title">{service.title}</h3>
+            <p class="service-description">{service.description}</p>
+
+            <div class="service-details">
+              {service.details.map((detail) => (
+                <span class="detail-tag">{detail}</span>
+              ))}
+            </div>
+          </div>
+        ))}
+      </div>
+    </div>
+  </section>
+
+  <!-- Bug Bounty Section -->
+  <section class="bugbounty-section" id="bug-bounty">
+    <div class="container">
+      <div class="section-header">
+        <span class="section-tag font-mono" data-animate="bb-tag">Bug Bounty</span>
+        <h2 class="section-title" data-animate="bb-title">Vulnerability Research</h2>
+        <p class="section-description" data-animate="bb-desc">
+          Rapports de vulnérabilités découvertes lors de programmes de bug bounty.
+          Les détails sont anonymisés pour protéger les entreprises concernées.
+          Focus sur la méthodologie et le raisonnement.
+        </p>
+      </div>
+
+      <div class="reports-grid">
+        {bugBountyReports.map((report, index) => (
+          <article class="report-card" data-animate="report" data-index={index}>
+            <div class="report-header">
+              <div class="report-meta">
+                <span class={`severity-badge severity-${report.severity.toLowerCase()} font-mono`}>
+                  {report.severity}
+                </span>
+                <span class="report-category font-mono">{report.category}</span>
+              </div>
+              <span class="report-number font-mono">#{String(index + 1).padStart(2, '0')}</span>
+            </div>
+
+            <h3 class="report-title">{report.title}</h3>
+            <p class="report-summary">{report.summary}</p>
+
+            <div class="report-section">
+              <h4 class="section-label">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <circle cx="12" cy="12" r="10"/>
+                  <path d="M12 16v-4M12 8h.01"/>
+                </svg>
+                Raisonnement & Méthodologie
+              </h4>
+              <div class="reasoning-content">
+                {report.reasoning.split('\n\n').map((paragraph) => (
+                  <p>{paragraph}</p>
+                ))}
+              </div>
+            </div>
+
+            <div class="report-section">
+              <h4 class="section-label">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/>
+                  <path d="M12 9v4M12 17h.01"/>
+                </svg>
+                Impact
+              </h4>
+              <p class="impact-text">{report.impact}</p>
+            </div>
+
+            <div class="report-section">
+              <h4 class="section-label">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/>
+                </svg>
+                Remédiation
+              </h4>
+              <ul class="fixes-list">
+                {report.fixes.map((fix) => (
+                  <li>
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                      <path d="M12 22c5.523 0 10-4.477 10-10S17.523 2 12 2 2 6.477 2 12s4.477 10 10 10z"/>
+                      <path d="m9 12 2 2 4-4"/>
+                    </svg>
+                    <span>{fix}</span>
+                  </li>
+                ))}
+              </ul>
+            </div>
+
+            <div class="methodology-tags">
+              {report.methodology.map((step) => (
+                <span class="method-tag font-mono">{step}</span>
+              ))}
+            </div>
+          </article>
+        ))}
+      </div>
+    </div>
+  </section>
+
+  <!-- CTA Section -->
+  <section class="cta-section">
+    <div class="container">
+      <div class="cta-content" data-animate="cta">
+        <h2>Besoin d'un audit de sécurité ?</h2>
+        <p>Identifions ensemble les vulnérabilités de vos applications.</p>
+        <a href={`${base}#contact`} class="btn btn-primary">
+          <span>Me contacter</span>
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M5 12h14M12 5l7 7-7 7"/>
+          </svg>
+        </a>
+      </div>
+    </div>
+  </section>
+</ProjectLayout>
+
+<script>
+  import { gsap } from 'gsap';
+  import { ScrollTrigger } from 'gsap/ScrollTrigger';
+
+  gsap.registerPlugin(ScrollTrigger);
+
+  document.addEventListener('DOMContentLoaded', () => {
+    // Hero animations
+    const tl = gsap.timeline({ defaults: { ease: 'power4.out' } });
+
+    tl.fromTo('[data-animate="badge"]',
+      { opacity: 0, y: 30 },
+      { opacity: 1, y: 0, duration: 0.8 }
+    );
+
+    tl.fromTo('[data-animate="title"]',
+      { opacity: 0, y: 50 },
+      { opacity: 1, y: 0, duration: 1 },
+      '-=0.5'
+    );
+
+    tl.fromTo('[data-animate="desc"]',
+      { opacity: 0, y: 30 },
+      { opacity: 1, y: 0, duration: 0.8 },
+      '-=0.6'
+    );
+
+    tl.fromTo('[data-animate="stats"] .stat',
+      { opacity: 0, y: 20 },
+      { opacity: 1, y: 0, duration: 0.6, stagger: 0.1 },
+      '-=0.4'
+    );
+
+    // Services
+    gsap.fromTo('[data-animate="services-title"]',
+      { opacity: 0, y: 30 },
+      {
+        opacity: 1,
+        y: 0,
+        duration: 0.8,
+        scrollTrigger: {
+          trigger: '.services-section',
+          start: 'top 80%',
+        }
+      }
+    );
+
+    gsap.fromTo('[data-animate="service"]',
+      { opacity: 0, y: 40 },
+      {
+        opacity: 1,
+        y: 0,
+        duration: 0.7,
+        stagger: 0.15,
+        scrollTrigger: {
+          trigger: '.services-grid',
+          start: 'top 80%',
+        }
+      }
+    );
+
+    // Bug Bounty section
+    gsap.fromTo('[data-animate="bb-tag"]',
+      { opacity: 0, y: 20 },
+      {
+        opacity: 1,
+        y: 0,
+        duration: 0.6,
+        scrollTrigger: {
+          trigger: '.bugbounty-section',
+          start: 'top 80%',
+        }
+      }
+    );
+
+    gsap.fromTo('[data-animate="bb-title"]',
+      { opacity: 0, y: 40 },
+      {
+        opacity: 1,
+        y: 0,
+        duration: 0.8,
+        scrollTrigger: {
+          trigger: '.bugbounty-section',
+          start: 'top 75%',
+        }
+      }
+    );
+
+    gsap.fromTo('[data-animate="bb-desc"]',
+      { opacity: 0, y: 30 },
+      {
+        opacity: 1,
+        y: 0,
+        duration: 0.7,
+        scrollTrigger: {
+          trigger: '.bugbounty-section',
+          start: 'top 70%',
+        }
+      }
+    );
+
+    // Reports
+    gsap.fromTo('[data-animate="report"]',
+      { opacity: 0, y: 60 },
+      {
+        opacity: 1,
+        y: 0,
+        duration: 0.8,
+        stagger: 0.2,
+        scrollTrigger: {
+          trigger: '.reports-grid',
+          start: 'top 80%',
+        }
+      }
+    );
+
+    // CTA
+    gsap.fromTo('[data-animate="cta"]',
+      { opacity: 0, y: 40 },
+      {
+        opacity: 1,
+        y: 0,
+        duration: 0.8,
+        scrollTrigger: {
+          trigger: '.cta-section',
+          start: 'top 80%',
+        }
+      }
+    );
+  });
+</script>
+
+<style>
+  /* Cyber Background */
+  .cyber-bg {
+    position: fixed;
+    inset: 0;
+    z-index: 0;
+    pointer-events: none;
+    overflow: hidden;
+  }
+
+  .grid-overlay {
+    position: absolute;
+    inset: 0;
+    background-image:
+      linear-gradient(rgba(239, 68, 68, 0.03) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(239, 68, 68, 0.03) 1px, transparent 1px);
+    background-size: 50px 50px;
+    mask-image: radial-gradient(ellipse at center, black 0%, transparent 70%);
+    -webkit-mask-image: radial-gradient(ellipse at center, black 0%, transparent 70%);
+  }
+
+  .floating-elements {
+    position: absolute;
+    inset: 0;
+  }
+
+  .hex {
+    position: absolute;
+    font-size: 60px;
+    color: rgba(239, 68, 68, 0.08);
+    animation: float 20s ease-in-out infinite;
+  }
+
+  .hex-1 { top: 15%; left: 10%; animation-delay: 0s; }
+  .hex-2 { top: 60%; right: 15%; animation-delay: -7s; }
+  .hex-3 { bottom: 20%; left: 20%; animation-delay: -14s; font-size: 40px; }
+
+  .binary {
+    position: absolute;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 14px;
+    color: rgba(239, 68, 68, 0.15);
+    letter-spacing: 0.2em;
+    animation: binaryFade 10s ease-in-out infinite;
+  }
+
+  .binary-1 { top: 25%; right: 10%; animation-delay: 0s; }
+  .binary-2 { top: 45%; left: 5%; animation-delay: -3s; }
+  .binary-3 { bottom: 30%; right: 25%; animation-delay: -6s; }
+
+  @keyframes float {
+    0%, 100% { transform: translateY(0) rotate(0deg); opacity: 0.08; }
+    25% { transform: translateY(-20px) rotate(5deg); opacity: 0.12; }
+    50% { transform: translateY(0) rotate(0deg); opacity: 0.08; }
+    75% { transform: translateY(20px) rotate(-5deg); opacity: 0.12; }
+  }
+
+  @keyframes binaryFade {
+    0%, 100% { opacity: 0.1; transform: translateY(0); }
+    50% { opacity: 0.25; transform: translateY(-10px); }
+  }
+
+  /* Red Dust Particles */
+  .dust-container {
+    position: absolute;
+    inset: 0;
+    overflow: hidden;
+  }
+
+  .dust {
+    position: absolute;
+    width: 3px;
+    height: 3px;
+    background: radial-gradient(circle, rgba(239, 68, 68, 0.8) 0%, rgba(239, 68, 68, 0) 70%);
+    border-radius: 50%;
+    animation: dustFloat 20s ease-in-out infinite;
+    opacity: 0;
+  }
+
+  .dust::after {
+    content: '';
+    position: absolute;
+    inset: -2px;
+    background: radial-gradient(circle, rgba(239, 68, 68, 0.3) 0%, transparent 70%);
+    border-radius: 50%;
+    filter: blur(2px);
+  }
+
+  @keyframes dustFloat {
+    0%, 100% {
+      opacity: 0;
+      transform: translateY(0) translateX(0) scale(1);
+    }
+    10% {
+      opacity: 0.6;
+    }
+    50% {
+      opacity: 0.4;
+      transform: translateY(-100px) translateX(30px) scale(1.2);
+    }
+    90% {
+      opacity: 0.6;
+    }
+  }
+
+  /* Individual dust positions and delays */
+  .dust-1 { top: 10%; left: 5%; animation-delay: 0s; animation-duration: 18s; }
+  .dust-2 { top: 25%; left: 15%; animation-delay: -2s; animation-duration: 22s; width: 4px; height: 4px; }
+  .dust-3 { top: 40%; left: 8%; animation-delay: -4s; animation-duration: 20s; }
+  .dust-4 { top: 60%; left: 12%; animation-delay: -6s; animation-duration: 24s; width: 2px; height: 2px; }
+  .dust-5 { top: 80%; left: 3%; animation-delay: -8s; animation-duration: 19s; }
+  .dust-6 { top: 15%; left: 85%; animation-delay: -1s; animation-duration: 21s; width: 4px; height: 4px; }
+  .dust-7 { top: 35%; left: 92%; animation-delay: -3s; animation-duration: 17s; }
+  .dust-8 { top: 55%; left: 88%; animation-delay: -5s; animation-duration: 23s; width: 2px; height: 2px; }
+  .dust-9 { top: 75%; left: 95%; animation-delay: -7s; animation-duration: 20s; }
+  .dust-10 { top: 90%; left: 80%; animation-delay: -9s; animation-duration: 18s; width: 3px; height: 3px; }
+  .dust-11 { top: 20%; left: 45%; animation-delay: -10s; animation-duration: 25s; width: 2px; height: 2px; }
+  .dust-12 { top: 45%; left: 55%; animation-delay: -11s; animation-duration: 19s; }
+  .dust-13 { top: 70%; left: 40%; animation-delay: -12s; animation-duration: 22s; width: 4px; height: 4px; }
+  .dust-14 { top: 30%; left: 70%; animation-delay: -13s; animation-duration: 20s; }
+  .dust-15 { top: 85%; left: 60%; animation-delay: -14s; animation-duration: 24s; width: 2px; height: 2px; }
+  .dust-16 { top: 5%; left: 30%; animation-delay: -15s; animation-duration: 21s; }
+  .dust-17 { top: 50%; left: 25%; animation-delay: -16s; animation-duration: 18s; width: 3px; height: 3px; }
+  .dust-18 { top: 95%; left: 35%; animation-delay: -17s; animation-duration: 23s; }
+  .dust-19 { top: 65%; left: 75%; animation-delay: -18s; animation-duration: 20s; width: 2px; height: 2px; }
+  .dust-20 { top: 12%; left: 65%; animation-delay: -19s; animation-duration: 22s; width: 4px; height: 4px; }
+
+  /* Navigation */
+  .project-nav {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 20px 40px;
+    background: rgba(10, 10, 10, 0.8);
+    backdrop-filter: blur(20px);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+    z-index: 1000;
+  }
+
+  .nav-back {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    color: var(--text-secondary);
+    font-size: 14px;
+    transition: color 0.3s ease;
+  }
+
+  .nav-back:hover {
+    color: var(--text-primary);
+  }
+
+  .nav-breadcrumb {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    font-size: 12px;
+    color: var(--text-muted);
+  }
+
+  .nav-breadcrumb a {
+    color: var(--text-muted);
+    transition: color 0.3s ease;
+  }
+
+  .nav-breadcrumb a:hover {
+    color: #ef4444;
+  }
+
+  .nav-breadcrumb .current {
+    color: var(--text-secondary);
+  }
+
+  /* Hero */
+  .security-hero {
+    position: relative;
+    padding: 180px 0 120px;
+    overflow: hidden;
+  }
+
+  .hero-bg-pattern {
+    position: absolute;
+    inset: 0;
+    background:
+      radial-gradient(circle at 20% 30%, rgba(239, 68, 68, 0.15) 0%, transparent 40%),
+      radial-gradient(circle at 80% 70%, rgba(251, 146, 60, 0.1) 0%, transparent 35%),
+      radial-gradient(circle at 50% 50%, rgba(239, 68, 68, 0.05) 0%, transparent 60%);
+    pointer-events: none;
+  }
+
+  .hero-bg-pattern::before {
+    content: '';
+    position: absolute;
+    top: 20%;
+    right: 10%;
+    width: 300px;
+    height: 300px;
+    border: 1px solid rgba(239, 68, 68, 0.1);
+    border-radius: 50%;
+    animation: pulseRing 4s ease-in-out infinite;
+  }
+
+  .hero-bg-pattern::after {
+    content: '';
+    position: absolute;
+    top: 20%;
+    right: 10%;
+    width: 200px;
+    height: 200px;
+    border: 1px solid rgba(239, 68, 68, 0.15);
+    border-radius: 50%;
+    animation: pulseRing 4s ease-in-out infinite 0.5s;
+  }
+
+  @keyframes pulseRing {
+    0%, 100% { transform: scale(1); opacity: 0.3; }
+    50% { transform: scale(1.1); opacity: 0.1; }
+  }
+
+  .container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 40px;
+    position: relative;
+  }
+
+  .hero-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    padding: 10px 20px;
+    background: rgba(239, 68, 68, 0.1);
+    border: 1px solid rgba(239, 68, 68, 0.2);
+    border-radius: 100px;
+    margin-bottom: 32px;
+  }
+
+  .badge-icon {
+    color: #ef4444;
+  }
+
+  .badge-text {
+    font-size: 12px;
+    color: #ef4444;
+    text-transform: uppercase;
+    letter-spacing: 0.15em;
+  }
+
+  .hero-title {
+    font-size: clamp(40px, 8vw, 72px);
+    font-weight: 700;
+    letter-spacing: -0.03em;
+    line-height: 1.1;
+    margin: 0 0 32px;
+  }
+
+  .hero-description {
+    font-size: 18px;
+    line-height: 1.8;
+    color: var(--text-secondary);
+    max-width: 700px;
+    margin: 0 0 48px;
+  }
+
+  .hero-stats {
+    display: flex;
+    gap: 48px;
+  }
+
+  .stat {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+  }
+
+  .stat-value {
+    font-size: 32px;
+    font-weight: 700;
+    color: #ef4444;
+  }
+
+  .stat-label {
+    font-size: 13px;
+    color: var(--text-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+  }
+
+  /* Services Section */
+  .services-section {
+    padding: 100px 0;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+  }
+
+  .section-title {
+    font-size: clamp(32px, 5vw, 48px);
+    font-weight: 700;
+    letter-spacing: -0.03em;
+    margin: 0 0 60px;
+    text-align: center;
+  }
+
+  .services-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 32px;
+  }
+
+  .service-card {
+    padding: 40px;
+    background: rgba(255, 255, 255, 0.02);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 20px;
+    transition: all 0.3s ease;
+  }
+
+  .service-card:hover {
+    border-color: rgba(239, 68, 68, 0.3);
+    transform: translateY(-4px);
+  }
+
+  .service-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 24px;
+  }
+
+  .service-icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 60px;
+    height: 60px;
+    background: rgba(239, 68, 68, 0.1);
+    border: 1px solid rgba(239, 68, 68, 0.2);
+    border-radius: 16px;
+    color: #ef4444;
+  }
+
+  .service-status {
+    padding: 6px 12px;
+    background: rgba(239, 68, 68, 0.1);
+    border: 1px solid rgba(239, 68, 68, 0.2);
+    border-radius: 100px;
+    font-size: 10px;
+    color: #ef4444;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+  }
+
+  .service-title {
+    font-size: 24px;
+    font-weight: 600;
+    margin: 0 0 16px;
+  }
+
+  .service-description {
+    font-size: 15px;
+    line-height: 1.7;
+    color: var(--text-secondary);
+    margin: 0 0 24px;
+  }
+
+  .service-details {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+  }
+
+  .detail-tag {
+    padding: 8px 14px;
+    background: rgba(255, 255, 255, 0.03);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 100px;
+    font-size: 12px;
+    color: var(--text-muted);
+  }
+
+  /* Bug Bounty Section */
+  .bugbounty-section {
+    position: relative;
+    padding: 120px 0;
+    background: linear-gradient(180deg, transparent 0%, rgba(239, 68, 68, 0.02) 50%, transparent 100%);
+  }
+
+  .bugbounty-section::before {
+    content: 'VULNERABILITIES';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    font-size: clamp(80px, 15vw, 200px);
+    font-weight: 900;
+    letter-spacing: -0.05em;
+    color: transparent;
+    -webkit-text-stroke: 1px rgba(239, 68, 68, 0.05);
+    pointer-events: none;
+    white-space: nowrap;
+  }
+
+  .section-header {
+    text-align: center;
+    max-width: 700px;
+    margin: 0 auto 80px;
+  }
+
+  .section-tag {
+    display: inline-block;
+    font-size: 12px;
+    color: #ef4444;
+    text-transform: uppercase;
+    letter-spacing: 0.25em;
+    margin-bottom: 20px;
+    padding: 8px 16px;
+    border: 1px solid rgba(239, 68, 68, 0.3);
+    border-radius: 100px;
+    background: rgba(239, 68, 68, 0.05);
+  }
+
+  .section-description {
+    font-size: 17px;
+    line-height: 1.8;
+    color: var(--text-secondary);
+    margin: 24px 0 0;
+  }
+
+  .reports-grid {
+    display: flex;
+    flex-direction: column;
+    gap: 40px;
+  }
+
+  /* Report Card */
+  .report-card {
+    position: relative;
+    padding: 48px;
+    background: rgba(255, 255, 255, 0.02);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 24px;
+    transition: all 0.4s ease;
+    overflow: hidden;
+  }
+
+  .report-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 3px;
+    background: linear-gradient(90deg, transparent, var(--severity-color, #ef4444), transparent);
+    opacity: 0;
+    transition: opacity 0.3s ease;
+  }
+
+  .report-card:hover::before {
+    opacity: 1;
+  }
+
+  .report-card:hover {
+    border-color: rgba(239, 68, 68, 0.2);
+    transform: translateY(-4px);
+    box-shadow: 0 20px 40px rgba(239, 68, 68, 0.1);
+  }
+
+  .report-card[data-index="0"]::before { --severity-color: #fb923c; }
+  .report-card[data-index="1"]::before { --severity-color: #ef4444; }
+  .report-card[data-index="2"]::before { --severity-color: #ef4444; }
+  .report-card[data-index="3"]::before { --severity-color: #facc15; }
+
+  .report-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 24px;
+  }
+
+  .report-meta {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+
+  .severity-badge {
+    padding: 6px 14px;
+    border-radius: 100px;
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    font-weight: 600;
+  }
+
+  .severity-critical {
+    background: rgba(239, 68, 68, 0.15);
+    color: #ef4444;
+    border: 1px solid rgba(239, 68, 68, 0.3);
+  }
+
+  .severity-high {
+    background: rgba(251, 146, 60, 0.15);
+    color: #fb923c;
+    border: 1px solid rgba(251, 146, 60, 0.3);
+  }
+
+  .severity-medium {
+    background: rgba(250, 204, 21, 0.15);
+    color: #facc15;
+    border: 1px solid rgba(250, 204, 21, 0.3);
+  }
+
+  .report-category {
+    font-size: 11px;
+    color: var(--text-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+  }
+
+  .report-number {
+    font-size: 14px;
+    color: var(--text-muted);
+    letter-spacing: 0.1em;
+  }
+
+  .report-title {
+    font-size: clamp(24px, 3vw, 32px);
+    font-weight: 600;
+    margin: 0 0 16px;
+    letter-spacing: -0.02em;
+  }
+
+  .report-summary {
+    font-size: 16px;
+    line-height: 1.7;
+    color: var(--text-secondary);
+    margin: 0 0 32px;
+    padding-bottom: 32px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+  }
+
+  .report-section {
+    margin-bottom: 32px;
+  }
+
+  .section-label {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--text-secondary);
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    margin: 0 0 16px;
+  }
+
+  .section-label svg {
+    color: #ef4444;
+  }
+
+  .reasoning-content {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+  }
+
+  .reasoning-content p {
+    font-size: 15px;
+    line-height: 1.8;
+    color: var(--text-secondary);
+    margin: 0;
+  }
+
+  .impact-text {
+    font-size: 15px;
+    line-height: 1.7;
+    color: var(--text-secondary);
+    margin: 0;
+    padding: 16px 20px;
+    background: rgba(239, 68, 68, 0.05);
+    border-left: 3px solid #ef4444;
+    border-radius: 0 8px 8px 0;
+  }
+
+  .fixes-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 12px;
+  }
+
+  .fixes-list li {
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+    font-size: 13px;
+    line-height: 1.5;
+    color: var(--text-secondary);
+    padding: 12px 16px;
+    background: rgba(255, 255, 255, 0.02);
+    border: 1px solid rgba(255, 255, 255, 0.06);
+    border-radius: 10px;
+    transition: all 0.3s ease;
+  }
+
+  .fixes-list li:hover {
+    background: rgba(255, 255, 255, 0.04);
+    border-color: rgba(255, 255, 255, 0.1);
+  }
+
+  .fixes-list li svg {
+    color: var(--text-muted);
+    flex-shrink: 0;
+    margin-top: 1px;
+  }
+
+  @media (max-width: 768px) {
+    .fixes-list {
+      grid-template-columns: 1fr;
+    }
+  }
+
+  .methodology-tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    padding-top: 24px;
+    border-top: 1px solid rgba(255, 255, 255, 0.05);
+  }
+
+  .method-tag {
+    padding: 8px 16px;
+    background: rgba(255, 255, 255, 0.03);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 100px;
+    font-size: 11px;
+    color: var(--text-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+  }
+
+  /* CTA Section */
+  .cta-section {
+    padding: 120px 0;
+    border-top: 1px solid rgba(255, 255, 255, 0.05);
+  }
+
+  .cta-content {
+    text-align: center;
+    max-width: 600px;
+    margin: 0 auto;
+  }
+
+  .cta-content h2 {
+    font-size: clamp(32px, 5vw, 48px);
+    font-weight: 700;
+    letter-spacing: -0.03em;
+    margin: 0 0 16px;
+  }
+
+  .cta-content p {
+    font-size: 18px;
+    color: var(--text-secondary);
+    margin: 0 0 32px;
+  }
+
+  .btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    padding: 16px 32px;
+    background: #ef4444;
+    color: white;
+    border-radius: 100px;
+    font-size: 15px;
+    font-weight: 500;
+    transition: all 0.3s ease;
+  }
+
+  .btn:hover {
+    background: #dc2626;
+    transform: translateY(-2px);
+  }
+
+  /* Responsive */
+  @media (max-width: 1024px) {
+    .services-grid {
+      grid-template-columns: 1fr;
+    }
+  }
+
+  @media (max-width: 768px) {
+    .project-nav {
+      padding: 16px 20px;
+    }
+
+    .container {
+      padding: 0 20px;
+    }
+
+    .security-hero {
+      padding: 140px 0 80px;
+    }
+
+    .hero-stats {
+      flex-wrap: wrap;
+      gap: 32px;
+    }
+
+    .services-section {
+      padding: 80px 0;
+    }
+
+    .service-card {
+      padding: 28px;
+    }
+
+    .bugbounty-section {
+      padding: 80px 0;
+    }
+
+    .report-card {
+      padding: 28px;
+    }
+
+    .section-header {
+      margin-bottom: 48px;
+    }
+
+    .cta-section {
+      padding: 80px 0;
+    }
+  }
+</style>
