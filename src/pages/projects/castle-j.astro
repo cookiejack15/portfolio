@@ -9,7 +9,7 @@ const moduleShowcases = [
   {
     id: "crm",
     title: "CRM Intelligent",
-    image: "/projects/Castle-J/CRM.png",
+    image: `${base}projects/Castle-J/CRM.png`,
     description: "Un CRM complet conçu pour maximiser vos conversions et centraliser toutes vos interactions clients.",
     features: [
       "Pipeline Kanban drag & drop avec statuts personnalisables",
@@ -23,8 +23,8 @@ const moduleShowcases = [
   {
     id: "facturation",
     title: "Facturation & Devis",
-    image: "/projects/Castle-J/Facture.png",
-    secondImage: "/projects/Castle-J/Devis.png",
+    image: `${base}projects/Castle-J/Facture.png`,
+    secondImage: `${base}projects/Castle-J/Devis.png`,
     description: "Générez des documents professionnels en quelques clics avec numérotation automatique et suivi des paiements.",
     features: [
       "Génération PDF professionnelle avec votre branding",
@@ -38,7 +38,7 @@ const moduleShowcases = [
   {
     id: "fournisseurs",
     title: "Gestion Fournisseurs",
-    image: "/projects/Castle-J/Fournisseurs.png",
+    image: `${base}projects/Castle-J/Fournisseurs.png`,
     description: "Centralisez vos relations fournisseurs et optimisez vos approvisionnements.",
     features: [
       "Fiches fournisseurs complètes avec coordonnées",
@@ -52,7 +52,7 @@ const moduleShowcases = [
   {
     id: "comptabilite",
     title: "Comptabilité",
-    image: "/projects/Castle-J/Comptabilite.png",
+    image: `${base}projects/Castle-J/Comptabilite.png`,
     description: "Une comptabilité simplifiée mais puissante, conforme au plan comptable français.",
     features: [
       "Plan comptable général français intégré",
@@ -66,7 +66,7 @@ const moduleShowcases = [
   {
     id: "rh",
     title: "Ressources Humaines",
-    image: "/projects/Castle-J/RH.png",
+    image: `${base}projects/Castle-J/RH.png`,
     description: "Gérez vos équipes efficacement : congés, temps, paie et évaluations.",
     features: [
       "Fiches employés complètes et sécurisées",
@@ -167,7 +167,7 @@ const securityLayers = [
     <!-- Full Width Dashboard Image -->
     <section class="showcase-section">
       <div class="showcase-image">
-        <img src="/projects/Castle-J/Dashboard.png" alt="Castle-J Dashboard" />
+        <img src={`${base}projects/Castle-J/Dashboard.png`} alt="Castle-J Dashboard" />
       </div>
     </section>
 
@@ -215,7 +215,7 @@ const securityLayers = [
 
         <div class="ai-showcase">
           <div class="ai-image">
-            <img src="/projects/Castle-J/ia.png" alt="Castle-J Agent IA" />
+            <img src={`${base}projects/Castle-J/ia.png`} alt="Castle-J Agent IA" />
           </div>
           <div class="ai-content">
             <div class="ai-modes">
@@ -249,7 +249,7 @@ const securityLayers = [
         <h2 class="section-title">Système Modulaire</h2>
         <p class="section-subtitle">Activez uniquement les modules dont vous avez besoin</p>
         <div class="modules-image">
-          <img src="/projects/Castle-J/Modules.png" alt="Castle-J Modules" />
+          <img src={`${base}projects/Castle-J/Modules.png`} alt="Castle-J Modules" />
         </div>
       </div>
     </section>
