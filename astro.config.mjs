@@ -6,7 +6,7 @@ import tailwindcss from '@tailwindcss/vite';
 // https://astro.build/config
 export default defineConfig({
   site: 'https://protoxassassin.github.io',
-  base: '/portfolio',
+  base: '/portfolio/',
   devToolbar: {
     enabled: false
   },
