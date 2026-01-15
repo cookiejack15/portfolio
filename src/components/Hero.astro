@@ -350,29 +350,38 @@ const base = import.meta.env.BASE_URL;
 
     // Parallax on scroll - simplified
     const isMobile = window.innerWidth <= 768;
+    const heroContent = document.querySelector('.hero-content');
 
     if (isMobile) {
       // On mobile, fade starts later and ends when hero is mostly scrolled
-      gsap.to('.hero-content', {
-        scrollTrigger: {
-          trigger: '.hero',
-          start: '30% top',  // Start fading when 30% of hero has scrolled
-          end: '80% top',    // Finish fading when 80% has scrolled
-          scrub: 1,
-        },
-        y: 50,
-        opacity: 0,
+      ScrollTrigger.create({
+        trigger: '.hero',
+        start: '30% top',
+        end: '80% top',
+        scrub: 1,
+        onUpdate: (self) => {
+          if (heroContent) {
+            gsap.set(heroContent, {
+              y: self.progress * 50,
+              opacity: 1 - self.progress,
+            });
+          }
+        }
       });
     } else {
-      gsap.to('.hero-content', {
-        scrollTrigger: {
-          trigger: '.hero',
-          start: 'top top',
-          end: 'bottom top',
-          scrub: 1,
-        },
-        y: 100,
-        opacity: 0,
+      ScrollTrigger.create({
+        trigger: '.hero',
+        start: 'top top',
+        end: 'bottom top',
+        scrub: 1,
+        onUpdate: (self) => {
+          if (heroContent) {
+            gsap.set(heroContent, {
+              y: self.progress * 100,
+              opacity: 1 - self.progress,
+            });
+          }
+        }
       });
     }
 
