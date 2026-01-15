@@ -353,16 +353,16 @@ const base = import.meta.env.BASE_URL;
     const heroContent = document.querySelector('.hero-content');
 
     if (isMobile) {
-      // On mobile, fade starts later and ends when hero is mostly scrolled
+      // On mobile, fade starts much later
       ScrollTrigger.create({
         trigger: '.hero',
-        start: '30% top',
-        end: '80% top',
+        start: '60% top',   // Start fading when 60% has scrolled (much later)
+        end: '95% top',     // Finish fading when almost entirely scrolled
         scrub: 1,
         onUpdate: (self) => {
           if (heroContent) {
             gsap.set(heroContent, {
-              y: self.progress * 50,
+              y: self.progress * 30,
               opacity: 1 - self.progress,
             });
           }
