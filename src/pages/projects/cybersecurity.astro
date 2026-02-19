@@ -93,6 +93,72 @@ Dans ce cas spécifique, un paramètre de configuration sensible était validé 
       "Utiliser un parser de paramètres robuste et testé",
       "Implémenter des tests de fuzzing sur les endpoints sensibles"
     ]
+  },
+  {
+    id: "ssrf-sdk-download",
+    title: "SSRF via SDK Image Download Mechanism",
+    severity: "Critical",
+    category: "Server-Side Request Forgery",
+    summary: "Vulnérabilité SSRF dans le mécanisme de téléchargement d'images/fichiers d'un SDK open-source populaire. Absence totale de validation sur les URLs côté serveur.",
+    reasoning: `L'analyse par revue de code statique a révélé qu'un SDK largement utilisé téléchargeait automatiquement les URLs fournies dans les messages utilisateurs lorsque le modèle sous-jacent ne supportait pas nativement le passage d'URLs.
+
+La fonction de téléchargement ne contenait aucune validation : pas de filtrage d'IP privées, pas de blocage des endpoints de métadonnées cloud (169.254.169.254, metadata.google.internal), pas de restriction de protocole, et pas de protection contre le DNS rebinding.
+
+Le flux vulnérable partait de l'entrée utilisateur, passait par une fonction de conversion qui identifiait les URLs à télécharger, puis appelait directement fetch() sans aucun contrôle de sécurité.
+
+La preuve de concept a démontré deux scénarios : confirmation SSRF via un serveur local capturant les requêtes, et simulation de vol de credentials AWS via émulation de l'endpoint de métadonnées EC2. Le tout réalisé en analyse statique et tests locaux, sans toucher aux systèmes de production.`,
+    impact: "Vol de credentials cloud (AWS IAM, GCP Service Account, Azure Managed Identity), reconnaissance réseau interne, accès non autorisé aux services internes, potentielle compromission complète de l'infrastructure cloud.",
+    methodology: ["Revue de code statique du SDK", "Traçage du flux d'entrée utilisateur", "Vérification de l'absence de contrôles de sécurité", "PoC local sans impact production"],
+    fixes: [
+      "Valider le protocole (HTTP/HTTPS uniquement) et bloquer les IP privées",
+      "Bloquer les endpoints de métadonnées cloud (169.254.x.x, metadata.google.internal)",
+      "Implémenter une protection DNS rebinding avec re-résolution avant fetch",
+      "Ajouter des limites de taille, timeouts, et allowlist/blocklist configurable"
+    ]
+  },
+  {
+    id: "iot-privesc-rce",
+    title: "IoT Privilege Escalation via Action Template Hijacking",
+    severity: "High",
+    category: "Broken Access Control",
+    summary: "Escalade de privilèges sur un dispositif IoT permettant l'exécution de commandes arbitraires en tant que service daemon via injection de templates d'action XML.",
+    reasoning: `L'analyse d'un dispositif IoT embarqué a révélé que le service interne de gestion d'actions chargeait des templates XML sans valider le contenu des balises de commande.
+
+Un utilisateur à faible privilèges pouvait, via le bus système D-Bus, uploader un template XML malveillant contenant des commandes shell arbitraires. Le service ne vérifiait ni l'autorisation de l'appelant, ni la légitimité du contenu du template.
+
+Le template injecté était persisté dans le répertoire système du service et hérité par le compte daemon du service, réalisant ainsi une escalade de privilèges : un utilisateur standard (uid 1000) obtenait l'exécution de code en tant que service système.
+
+La preuve de concept a démontré la chaîne complète : création d'un template avec une commande d'exécution, upload via D-Bus sans authentification admin, vérification que le fichier était possédé par le daemon, et confirmation de l'exécution avec les privilèges élevés. CVE-2026-1185 a été assigné pour cette vulnérabilité.`,
+    impact: "Exécution de code arbitraire en tant que service daemon, escalade de privilèges, persistance à travers les redémarrages, potentiel backdoor permanent sur le dispositif.",
+    methodology: ["Analyse de la surface d'attaque D-Bus", "Identification de l'absence de contrôle d'autorisation", "Injection de template XML malveillant", "Validation de l'escalade de privilèges"],
+    fixes: [
+      "Valider les chemins d'exécution dans les templates contre une whitelist",
+      "Empêcher les templates utilisateurs d'utiliser des IDs système",
+      "Restreindre l'accès D-Bus au service Action Engine aux administrateurs uniquement",
+      "Exiger des signatures cryptographiques sur les templates d'action"
+    ]
+  },
+  {
+    id: "idor-multi-tenant",
+    title: "IDOR - Unauthorized Cross-Organization Data Modification",
+    severity: "High",
+    category: "Broken Access Control",
+    summary: "Absence de contrôle d'autorisation sur un endpoint PATCH permettant à tout agent authentifié de modifier des données de n'importe quelle organisation sur une plateforme multi-tenant gouvernementale.",
+    reasoning: `L'analyse d'une plateforme web multi-tenant de gestion de rendez-vous a révélé qu'un endpoint de mise à jour ne vérifiait pas l'appartenance organisationnelle de l'utilisateur.
+
+Le contrôleur concerné récupérait directement l'enregistrement par son ID sans filtrer par organisation, puis exécutait la modification sans appeler la politique d'autorisation — contrairement à tous les autres contrôleurs de l'application qui implémentaient correctement ce contrôle.
+
+La politique d'autorisation existait bien dans le code, avec une vérification d'appartenance organisationnelle, mais elle n'était jamais invoquée. L'analyse de l'historique Git a confirmé que cette omission datait du commit initial de la fonctionnalité.
+
+L'énumération séquentielle des IDs a permis de modifier avec succès plus de 20 enregistrements appartenant à différentes organisations, confirmant la violation complète de l'isolation multi-tenant. Chaque requête PATCH retournait un HTTP 200 avec confirmation de la modification.`,
+    impact: "Modification non autorisée de données inter-organisations, violation de l'isolation multi-tenant, non-conformité RGPD (Article 32), corruption de données de suivi social affectant potentiellement des bénéficiaires.",
+    methodology: ["Analyse des contrôleurs et comparaison des contrôles d'accès", "Identification de l'endpoint sans autorisation", "Énumération d'IDs cross-organisation", "Revue de code et historique Git"],
+    fixes: [
+      "Ajouter l'appel d'autorisation manquant dans le contrôleur",
+      "Implémenter la méthode update? dans la policy existante",
+      "Scoper les requêtes par organisation de l'agent courant",
+      "Ajouter des tests d'autorisation automatisés pour chaque endpoint"
+    ]
   }
 ];
 

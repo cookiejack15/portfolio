@@ -340,13 +340,19 @@ const projects = [
       // Set first dot active
       if (dots[0]) dots[0].classList.add('active');
 
-      // Create scroll-triggered animation
+      // Create scroll-triggered animation with snap
       ScrollTrigger.create({
         trigger: wrapper,
         start: 'top 15%',
         end: `+=${totalCards * 100}%`,
         pin: true,
         scrub: 0.3,
+        snap: {
+          snapTo: 1 / (totalCards - 1), // Snap to each card position
+          duration: { min: 0.2, max: 0.4 },
+          delay: 0.1,
+          ease: 'power2.inOut'
+        },
         onUpdate: (self) => {
           const progress = self.progress;
           const cardIndex = Math.min(Math.floor(progress * totalCards), totalCards - 1);
