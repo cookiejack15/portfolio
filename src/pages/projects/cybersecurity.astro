@@ -471,92 +471,96 @@ const securityServices = [
 
       <div class="reports-grid">
         {bugBountyReports.map((report, index) => (
-          <article class={`report-card sev-${report.severity.toLowerCase()}`} data-animate="report" data-index={index}>
+          <article class={`report-card sev-${report.severity.toLowerCase()}${report.image ? ' has-image' : ''}`} data-animate="report" data-index={index}>
 
-            <!-- Accent line -->
-            <div class="card-accent"></div>
+            {/* Image full-bleed en haut */}
+            {report.image && (
+              <div class="card-cover">
+                <img
+                  src={`${base}bugbounty/${report.image}`}
+                  alt={`PoC – ${report.title}`}
+                  class="card-cover-img"
+                  loading="lazy"
+                />
+                <div class="card-cover-overlay"></div>
+              </div>
+            )}
 
-            <!-- Card header -->
-            <div class="card-top">
+            {/* Corps de la card */}
+            <div class="card-body">
+
+              {/* Meta row */}
               <div class="card-meta">
-                <span class={`sev-pill sev-pill-${report.severity.toLowerCase()}`}>
+                <span class={`sev-chip sev-chip-${report.severity.toLowerCase()}`}>
                   <span class="sev-dot"></span>
                   {report.severity}
                 </span>
-                <span class="cat-label font-mono">{report.category}</span>
+                <span class="cat-chip font-mono">{report.category}</span>
+                {report.program && (
+                  <span class="prog-chip font-mono">{report.program}</span>
+                )}
               </div>
-              {report.reward && (
-                <span class="reward-badge">{report.reward}</span>
-              )}
-            </div>
 
-            <!-- Card body (always visible) -->
-            <div class="card-body">
-              {report.program && (
-                <p class="card-program font-mono">{report.program}</p>
-              )}
+              {/* Titre */}
               <h3 class="card-title">{report.title}</h3>
+
+              {/* Hook */}
               {report.hook && (
-                <p class="card-hook">{report.hook}</p>
+                <blockquote class="card-hook">
+                  <span class="hook-quote">"</span>
+                  {report.hook}
+                </blockquote>
               )}
-              {report.image && (
-                <div class="card-image-wrap">
-                  <img
-                    src={`${base}bugbounty/${report.image}`}
-                    alt={`PoC – ${report.title}`}
-                    class="card-img"
-                    loading="lazy"
-                  />
-                </div>
-              )}
+
             </div>
 
-            <!-- Toggle -->
+            {/* Toggle */}
             <button class="card-toggle" aria-expanded="false">
               <span class="toggle-label">Voir le détail</span>
-              <svg class="toggle-icon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+              <svg class="toggle-icon" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
                 <path d="M6 9l6 6 6-6"/>
               </svg>
             </button>
 
-            <!-- Expandable detail -->
+            {/* Détail déroulable */}
             <div class="card-detail">
-            <div class="card-detail-inner">
-              <div class="detail-section">
-                <h4 class="detail-label">Raisonnement</h4>
-                <div class="detail-reasoning">
-                  {report.reasoning.split('\n\n').map((p) => (
-                    <p>{p}</p>
+              <div class="card-detail-inner">
+
+                <div class="detail-section">
+                  <p class="detail-label">Raisonnement</p>
+                  <div class="detail-reasoning">
+                    {report.reasoning.split('\n\n').map((p) => (
+                      <p>{p}</p>
+                    ))}
+                  </div>
+                </div>
+
+                <div class="detail-section">
+                  <p class="detail-label">Impact</p>
+                  <p class="detail-impact">{report.impact}</p>
+                </div>
+
+                <div class="detail-section">
+                  <p class="detail-label">Remédiation</p>
+                  <ul class="detail-fixes">
+                    {report.fixes.map((fix) => (
+                      <li>
+                        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                          <path d="m9 12 2 2 4-4"/><circle cx="12" cy="12" r="10"/>
+                        </svg>
+                        {fix}
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+
+                <div class="detail-tags">
+                  {report.methodology.map((step) => (
+                    <span class="detail-tag font-mono">{step}</span>
                   ))}
                 </div>
-              </div>
 
-              <div class="detail-section">
-                <h4 class="detail-label">Impact</h4>
-                <p class="detail-impact">{report.impact}</p>
               </div>
-
-              <div class="detail-section">
-                <h4 class="detail-label">Remédiation</h4>
-                <ul class="detail-fixes">
-                  {report.fixes.map((fix) => (
-                    <li>
-                      <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
-                        <path d="m9 12 2 2 4-4"/>
-                        <circle cx="12" cy="12" r="10"/>
-                      </svg>
-                      {fix}
-                    </li>
-                  ))}
-                </ul>
-              </div>
-
-              <div class="detail-tags">
-                {report.methodology.map((step) => (
-                  <span class="detail-tag font-mono">{step}</span>
-                ))}
-              </div>
-            </div>
             </div>
 
           </article>
@@ -1159,12 +1163,17 @@ const securityServices = [
   .reports-grid {
     display: grid;
     grid-template-columns: repeat(2, 1fr);
-    gap: 20px;
+    gap: 16px;
     align-items: start;
   }
 
-  @media (max-width: 900px) {
+  .report-card.has-image {
+    grid-column: 1 / -1;
+  }
+
+  @media (max-width: 860px) {
     .reports-grid { grid-template-columns: 1fr; }
+    .report-card.has-image { grid-column: auto; }
   }
 
   /* ── Severity tokens ── */
@@ -1174,167 +1183,172 @@ const securityServices = [
 
   /* ── Card shell ── */
   .report-card {
-    position: relative;
-    background: rgba(255, 255, 255, 0.04);
-    border: 1px solid rgba(255, 255, 255, 0.09);
-    border-radius: 20px;
+    background: #111214;
+    border: 1px solid rgba(255, 255, 255, 0.07);
+    border-radius: 18px;
     overflow: hidden;
-    transition: transform 0.3s ease, box-shadow 0.3s ease, border-color 0.3s ease;
-    backdrop-filter: blur(16px);
-    -webkit-backdrop-filter: blur(16px);
+    transition: transform 0.35s ease, box-shadow 0.35s ease, border-color 0.35s ease;
   }
 
   .report-card:hover {
-    transform: translateY(-4px);
-    border-color: rgba(var(--sev-rgb, 239, 68, 68), 0.3);
+    transform: translateY(-5px) scale(1.005);
+    border-color: rgba(var(--sev-rgb, 239, 68, 68), 0.35);
     box-shadow:
-      0 20px 60px rgba(0, 0, 0, 0.4),
-      0 0 0 1px rgba(var(--sev-rgb, 239, 68, 68), 0.1) inset;
+      0 24px 64px rgba(0, 0, 0, 0.5),
+      0 0 0 1px rgba(var(--sev-rgb, 239, 68, 68), 0.08) inset;
   }
 
-  /* ── Top accent ── */
-  .card-accent {
-    height: 1px;
-    background: linear-gradient(90deg, transparent 0%, var(--sev, #ef4444) 40%, var(--sev, #ef4444) 60%, transparent 100%);
-    opacity: 0.6;
-    transition: opacity 0.3s ease;
-  }
-
-  .report-card:hover .card-accent { opacity: 1; }
-
-  /* ── Top row ── */
-  .card-top {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    padding: 18px 22px 0;
-  }
-
-  .card-meta {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    min-width: 0;
-  }
-
-  .sev-pill {
-    display: inline-flex;
-    align-items: center;
-    gap: 6px;
-    padding: 4px 10px;
-    border-radius: 100px;
-    font-size: 10px;
-    font-weight: 700;
-    text-transform: uppercase;
-    letter-spacing: 0.08em;
-    flex-shrink: 0;
-  }
-
-  .sev-pill-critical { background: rgba(239,68,68,0.15); color: #ef4444; border: 1px solid rgba(239,68,68,0.25); }
-  .sev-pill-high     { background: rgba(251,146,60,0.15); color: #fb923c; border: 1px solid rgba(251,146,60,0.25); }
-  .sev-pill-medium   { background: rgba(250,204,21,0.15); color: #facc15; border: 1px solid rgba(250,204,21,0.25); }
-
-  .sev-dot {
-    width: 6px;
-    height: 6px;
-    border-radius: 50%;
-    background: currentColor;
-    box-shadow: 0 0 6px currentColor;
-    flex-shrink: 0;
-  }
-
-  .cat-label {
-    font-size: 10px;
-    color: var(--text-muted);
-    text-transform: uppercase;
-    letter-spacing: 0.08em;
-    white-space: nowrap;
+  /* ── Cover image ── */
+  .card-cover {
+    position: relative;
+    width: 100%;
     overflow: hidden;
-    text-overflow: ellipsis;
+    max-height: 260px;
   }
 
-  .reward-badge {
-    display: inline-flex;
-    align-items: center;
-    padding: 4px 12px;
-    background: rgba(74, 222, 128, 0.1);
-    border: 1px solid rgba(74, 222, 128, 0.25);
-    border-radius: 100px;
-    font-size: 12px;
-    font-weight: 700;
-    color: #4ade80;
-    flex-shrink: 0;
-    letter-spacing: 0.02em;
+  .report-card.has-image .card-cover {
+    max-height: 340px;
+  }
+
+  .card-cover-img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+    transition: transform 0.5s ease;
+  }
+
+  .report-card:hover .card-cover-img {
+    transform: scale(1.03);
+  }
+
+  .card-cover-overlay {
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(to bottom, transparent 40%, #111214 100%);
   }
 
   /* ── Card body ── */
   .card-body {
-    padding: 14px 22px 20px;
+    padding: 20px 24px 4px;
   }
 
-  .card-program {
+  /* ── Meta row ── */
+  .card-meta {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex-wrap: wrap;
+    margin-bottom: 14px;
+  }
+
+  .sev-chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    padding: 3px 10px 3px 8px;
+    border-radius: 100px;
     font-size: 10px;
-    color: var(--text-muted);
+    font-weight: 700;
     text-transform: uppercase;
-    letter-spacing: 0.12em;
-    margin: 0 0 8px;
+    letter-spacing: 0.08em;
+    flex-shrink: 0;
   }
 
+  .sev-chip-critical { background: rgba(239,68,68,0.12); color: #ef4444; border: 1px solid rgba(239,68,68,0.2); }
+  .sev-chip-high     { background: rgba(251,146,60,0.12); color: #fb923c; border: 1px solid rgba(251,146,60,0.2); }
+  .sev-chip-medium   { background: rgba(250,204,21,0.12); color: #facc15; border: 1px solid rgba(250,204,21,0.2); }
+
+  .sev-dot {
+    width: 5px;
+    height: 5px;
+    border-radius: 50%;
+    background: currentColor;
+    box-shadow: 0 0 5px currentColor;
+    flex-shrink: 0;
+    animation: sev-pulse 2.5s ease-in-out infinite;
+  }
+
+  @keyframes sev-pulse {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.4; }
+  }
+
+  .cat-chip {
+    font-size: 10px;
+    color: rgba(255,255,255,0.3);
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+  }
+
+  .prog-chip {
+    font-size: 10px;
+    color: rgba(255,255,255,0.25);
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    margin-left: auto;
+  }
+
+  /* ── Title ── */
   .card-title {
-    font-size: clamp(15px, 1.8vw, 18px);
-    font-weight: 600;
-    letter-spacing: -0.02em;
-    line-height: 1.35;
-    margin: 0 0 14px;
-    color: var(--text-primary);
-  }
-
-  .card-hook {
-    font-size: 13px;
-    line-height: 1.6;
-    color: var(--text-secondary);
-    font-style: italic;
+    font-size: clamp(16px, 2vw, 21px);
+    font-weight: 650;
+    letter-spacing: -0.025em;
+    line-height: 1.3;
     margin: 0 0 16px;
-    padding: 10px 14px;
-    background: rgba(var(--sev-rgb, 239, 68, 68), 0.05);
-    border-left: 2px solid rgba(var(--sev-rgb, 239, 68, 68), 0.5);
-    border-radius: 0 8px 8px 0;
+    color: #f5f5f7;
   }
 
-  .card-image-wrap {
+  /* ── Hook quote ── */
+  .card-hook {
+    position: relative;
+    margin: 0 0 20px;
+    padding: 14px 18px 14px 22px;
+    background: rgba(var(--sev-rgb, 239, 68, 68), 0.04);
+    border: 1px solid rgba(var(--sev-rgb, 239, 68, 68), 0.12);
     border-radius: 10px;
-    overflow: hidden;
-    border: 1px solid rgba(255, 255, 255, 0.07);
+    font-size: 13px;
+    line-height: 1.65;
+    color: rgba(255, 255, 255, 0.5);
+    font-style: normal;
   }
 
-  .card-img {
-    width: 100%;
-    height: auto;
-    display: block;
+  .hook-quote {
+    position: absolute;
+    top: 6px;
+    left: 12px;
+    font-size: 28px;
+    line-height: 1;
+    color: var(--sev, #ef4444);
+    opacity: 0.35;
+    font-family: Georgia, serif;
+    user-select: none;
   }
 
   /* ── Toggle button ── */
   .card-toggle {
     width: 100%;
-    padding: 13px 22px;
+    padding: 14px 24px;
     border: none;
-    border-top: 1px solid rgba(255, 255, 255, 0.06);
+    border-top: 1px solid rgba(255, 255, 255, 0.05);
     background: transparent;
-    color: var(--text-muted);
-    font-size: 12px;
+    color: rgba(255,255,255,0.3);
+    font-size: 11px;
     font-weight: 500;
-    letter-spacing: 0.04em;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
     cursor: pointer;
     display: flex;
     align-items: center;
     justify-content: center;
-    gap: 7px;
+    gap: 6px;
     transition: color 0.2s ease, background 0.2s ease;
+    font-family: inherit;
   }
 
   .card-toggle:hover {
-    color: var(--text-primary);
-    background: rgba(255, 255, 255, 0.03);
+    color: rgba(255,255,255,0.7);
+    background: rgba(255, 255, 255, 0.02);
   }
 
   .toggle-icon {
@@ -1362,19 +1376,19 @@ const securityServices = [
   }
 
   .detail-section {
-    padding: 20px 22px 0;
+    padding: 20px 24px 0;
   }
 
-  .detail-section:last-of-type {
-    padding-bottom: 4px;
+  .detail-section + .detail-section {
+    margin-top: 4px;
   }
 
   .detail-label {
-    font-size: 10px;
+    font-size: 9px;
     font-weight: 700;
     text-transform: uppercase;
-    letter-spacing: 0.12em;
-    color: var(--text-muted);
+    letter-spacing: 0.14em;
+    color: rgba(255,255,255,0.25);
     margin: 0 0 10px;
   }
 
@@ -1387,18 +1401,18 @@ const securityServices = [
   .detail-reasoning p {
     font-size: 13px;
     line-height: 1.75;
-    color: var(--text-secondary);
+    color: rgba(255,255,255,0.5);
     margin: 0;
   }
 
   .detail-impact {
     font-size: 13px;
     line-height: 1.65;
-    color: var(--text-secondary);
+    color: rgba(255,255,255,0.5);
     margin: 0;
     padding: 12px 16px;
-    background: rgba(var(--sev-rgb, 239, 68, 68), 0.06);
-    border-left: 2px solid var(--sev, #ef4444);
+    background: rgba(var(--sev-rgb, 239, 68, 68), 0.05);
+    border-left: 2px solid rgba(var(--sev-rgb, 239, 68, 68), 0.5);
     border-radius: 0 8px 8px 0;
   }
 
@@ -1416,8 +1430,8 @@ const securityServices = [
     align-items: flex-start;
     gap: 9px;
     font-size: 13px;
-    line-height: 1.5;
-    color: var(--text-secondary);
+    line-height: 1.55;
+    color: rgba(255,255,255,0.5);
   }
 
   .detail-fixes li svg {
@@ -1429,19 +1443,19 @@ const securityServices = [
   .detail-tags {
     display: flex;
     flex-wrap: wrap;
-    gap: 8px;
-    padding: 16px 22px 22px;
-    border-top: 1px solid rgba(255, 255, 255, 0.05);
+    gap: 6px;
+    padding: 16px 24px 22px;
+    border-top: 1px solid rgba(255, 255, 255, 0.04);
     margin-top: 16px;
   }
 
   .detail-tag {
-    padding: 5px 12px;
+    padding: 4px 10px;
     background: rgba(255, 255, 255, 0.03);
-    border: 1px solid rgba(255, 255, 255, 0.08);
+    border: 1px solid rgba(255, 255, 255, 0.06);
     border-radius: 100px;
-    font-size: 10px;
-    color: var(--text-muted);
+    font-size: 9px;
+    color: rgba(255,255,255,0.25);
     text-transform: uppercase;
     letter-spacing: 0.06em;
   }
