@@ -159,6 +159,28 @@ L'énumération séquentielle des IDs a permis de modifier avec succès plus de 
       "Scoper les requêtes par organisation de l'agent courant",
       "Ajouter des tests d'autorisation automatisés pour chaque endpoint"
     ]
+  },
+  {
+    id: "hardcoded-creds-ekyc",
+    title: "Hardcoded API Key Granting Unauthenticated Admin Access to Production eKYC System",
+    severity: "Critical",
+    category: "Sensitive Information Disclosure",
+    summary: "Clé API hardcodée dans le JavaScript client d'une application Next.js d'un secteur bancaire réglementé, permettant un accès administrateur non authentifié à l'intégralité du système eKYC de production.",
+    reasoning: `L'analyse du bundle JavaScript client d'une application Next.js a révélé une clé API embarquée en clair dans les fichiers statiques publics. Cette clé était utilisée pour construire un header d'authentification Basic Auth côté frontend.
+
+En combinant cette clé avec l'identifiant admin, il a été possible de s'authentifier directement sur le backend de production sans aucun compte, session, ou interaction avec l'application légitime — uniquement via curl.
+
+L'impact a été validé progressivement : accès confirmé via /api/user_check (rôle admin, user_id 1), puis énumération de l'ensemble des endpoints exposés. Le système entier était accessible : tickets KYC clients, enregistrements vidéo, comptes employés, logs d'audit, configuration système et statistiques en temps réel.
+
+La même clé était également utilisée pour construire des tokens WebSocket, permettant une interaction temps réel avec le système de gestion des agents. Aucune opération d'écriture n'a été effectuée sur l'environnement de production par respect des données sensibles (KYC bancaire).`,
+    impact: "42 705 tickets KYC clients (noms, statuts, identifiants), 17 334 enregistrements vidéo de vérification d'identité via URLs S3 pré-signées, 37 484 CDR, 1 540 445 entrées d'audit, 32 comptes employés — système de production d'une banque digitale réglementée OJK.",
+    methodology: ["Analyse des bundles JavaScript statiques Next.js", "Identification et extraction de la clé hardcodée", "Validation de l'accès admin non authentifié", "Énumération progressive des endpoints exposés"],
+    fixes: [
+      "Rotation immédiate de la clé exposée et invalidation des sessions",
+      "Suppression des credentials hardcodés du JavaScript client",
+      "Mise en place d'une authentification session-based côté backend",
+      "Restriction IP / VPN sur les endpoints d'administration backend"
+    ]
   }
 ];
 
