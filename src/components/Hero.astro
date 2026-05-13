@@ -21,6 +21,16 @@ const base = import.meta.env.BASE_URL;
 
   <div class="container hero-container">
     <div class="hero-content">
+
+      <div class="hero-avatar" data-gsap="avatar">
+        <img
+          src={`${base}profile-picture/profile-removebg-preview (1).png`}
+          alt="Ismail Chiba"
+          class="avatar-img"
+          loading="eager"
+        />
+      </div>
+
       <div class="hero-badge" data-gsap="badge">
         <span class="badge-dot"></span>
         <span class="badge-text font-mono">Disponible pour missions</span>
@@ -293,10 +303,17 @@ const base = import.meta.env.BASE_URL;
     // Initial animations timeline
     const tl = gsap.timeline({ defaults: { ease: 'power4.out' } });
 
+    // Avatar
+    tl.fromTo('[data-gsap="avatar"]',
+      { opacity: 0, scale: 0.7 },
+      { opacity: 1, scale: 1, duration: 0.8, ease: 'back.out(1.4)' }
+    );
+
     // Badge
     tl.fromTo('[data-gsap="badge"]',
       { opacity: 0, y: 30, scale: 0.9 },
-      { opacity: 1, y: 0, scale: 1, duration: 1 }
+      { opacity: 1, y: 0, scale: 1, duration: 1 },
+      '-=0.3'
     );
 
     // Title
@@ -461,6 +478,52 @@ const base = import.meta.env.BASE_URL;
     display: flex;
     flex-direction: column;
     align-items: center;
+  }
+
+  /* Avatar */
+  .hero-avatar {
+    width: 130px;
+    height: 130px;
+    border-radius: 50%;
+    margin-bottom: 32px;
+    position: relative;
+    flex-shrink: 0;
+  }
+
+  .hero-avatar::before {
+    content: '';
+    position: absolute;
+    inset: -3px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, rgba(147, 197, 253, 0.4), rgba(255,255,255,0.05), rgba(147, 197, 253, 0.2));
+    z-index: 0;
+  }
+
+  .hero-avatar::after {
+    content: '';
+    position: absolute;
+    inset: -8px;
+    border-radius: 50%;
+    background: radial-gradient(circle, rgba(147, 197, 253, 0.12) 0%, transparent 70%);
+    z-index: 0;
+    animation: avatar-glow 3s ease-in-out infinite;
+  }
+
+  @keyframes avatar-glow {
+    0%, 100% { opacity: 0.6; transform: scale(1); }
+    50% { opacity: 1; transform: scale(1.06); }
+  }
+
+  .avatar-img {
+    width: 130px;
+    height: 130px;
+    border-radius: 50%;
+    object-fit: cover;
+    object-position: center top;
+    display: block;
+    position: relative;
+    z-index: 1;
+    background: rgba(255,255,255,0.03);
   }
 
   /* Badge */
