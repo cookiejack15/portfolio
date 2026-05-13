@@ -181,6 +181,28 @@ La même clé était également utilisée pour construire des tokens WebSocket, 
       "Mise en place d'une authentification session-based côté backend",
       "Restriction IP / VPN sur les endpoints d'administration backend"
     ]
+  },
+  {
+    id: "idor-gov-visio",
+    title: "IDOR - Unauthenticated Access to PIN Codes & LiveKit Credentials on Government Visio Platform",
+    severity: "High",
+    category: "Insecure Direct Object Reference",
+    summary: "Exposition non authentifiée des codes PIN téléphoniques et tokens LiveKit d'une plateforme de visioconférence gouvernementale open source, avec contournement persistant après restriction d'accès.",
+    reasoning: `L'analyse du code source public (Django REST Framework) a révélé que la permission sur l'endpoint de rooms autorisait les méthodes GET sans authentification. Le serializer exposait les codes PIN et générait des tokens LiveKit même pour des utilisateurs anonymes.
+
+Une première correction partielle a été déployée mais contournée : le patch supprimait le pin_code uniquement dans la branche else de should_access_room, jamais atteinte pour les rooms publiques (is_public = True force toujours la branche if).
+
+La preuve de concept complète a démontré : création d'une room publique, récupération du pin_code sans authentification, puis changement d'accès en restricted. Le PIN reste valide car il n'est généré qu'à la création du modèle et jamais régénéré lors d'un changement d'access_level.
+
+Le vecteur d'attaque le plus critique : la règle de dispatch SIP ne vérifie pas l'access_level, uniquement le PIN. Un attaquant ayant capturé le PIN lors de la phase publique peut rejoindre la réunion par téléphone même après que la room soit passée en restricted — sans compte, sans invitation, sans URL.`,
+    impact: "Accès téléphonique persistant à des réunions gouvernementales après restriction, contournement des contrôles d'accès web via SIP, exposition des codes PIN et credentials LiveKit aux utilisateurs non authentifiés.",
+    methodology: ["Revue de code source open source (permissions.py + serializers.py)", "Identification du contournement du patch partiel", "PoC de persistance d'accès après changement d'access_level", "Analyse de la chaîne SIP/dispatch rule"],
+    fixes: [
+      "Supprimer pin_code pour tous les non-admins indépendamment de should_access_room",
+      "Régénérer le PIN lors de chaque changement d'access_level vers restricted",
+      "Vérifier l'access_level dans la règle de dispatch SIP côté téléphonie",
+      "Exiger l'authentification pour les méthodes GET sur l'endpoint rooms"
+    ]
   }
 ];
 
