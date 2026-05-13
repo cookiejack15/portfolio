@@ -7,9 +7,11 @@ const base = import.meta.env.BASE_URL;
 const bugBountyReports = [
   {
     id: "ssrf-bypass",
+    program: "Programme privé",
     title: "SSRF Protection Bypass via Host Header",
     severity: "High",
     category: "Server-Side Request Forgery",
+    hook: "Le check valide l'URL — la requête suit le Host header. Le proxy regarde A, le backend contacte B.",
     summary: "Contournement d'une protection anti-SSRF en manipulant le header Host de la requête HTTP.",
     reasoning: `Le produit de sécurité analysé intégrait un système de protection SSRF qui validait les URLs fournies par les utilisateurs.
 
@@ -28,9 +30,11 @@ En envoyant une requête où l'URL semblait légitime mais le header Host pointa
   },
   {
     id: "graphql-disclosure",
+    program: "Programme privé",
     title: "GraphQL Mass Data Exposure",
     severity: "Critical",
     category: "Information Disclosure",
+    hook: "Introspection active en prod → schéma complet → query sans auth → 10 907 comptes personnels énumérés.",
     summary: "Exposition de données utilisateurs via introspection GraphQL et mutations non authentifiées.",
     reasoning: `L'analyse a débuté par une reconnaissance de l'API GraphQL exposée. La première étape a été de tester si l'introspection était activée — une fonctionnalité souvent laissée active en production par erreur.
 
@@ -50,9 +54,11 @@ Plus critique encore, certaines mutations (opérations d'écriture) étaient ég
   },
   {
     id: "rce-injection",
+    program: "Programme privé",
     title: "Authenticated RCE via Command Injection",
     severity: "Critical",
     category: "Remote Code Execution",
+    hook: "Paramètre réseau concaténé directement dans un shell CGI. Time-based pour confirmer, OOB pour exfiltrer.",
     summary: "Exécution de code arbitraire via injection de commandes dans un paramètre de configuration.",
     reasoning: `L'interface d'administration du système embarqué permettait de configurer certains paramètres réseau. L'analyse du trafic HTTP a révélé que ces paramètres étaient passés à des scripts CGI côté serveur.
 
@@ -74,9 +80,11 @@ La validation finale a utilisé une technique d'exfiltration out-of-band pour co
   },
   {
     id: "crlf-injection",
+    program: "Programme privé",
     title: "CRLF Injection for Parameter Tampering",
     severity: "Medium",
     category: "Injection",
+    hook: "\\r\\n dans un header = nouveau paramètre pour le parser serveur. La validation client ne voit rien.",
     summary: "Injection de paramètres via caractères CRLF permettant de contourner des validations.",
     reasoning: `En analysant l'API de configuration, une observation intéressante a émergé : le serveur parsait les paramètres d'une manière qui pouvait être exploitée.
 
@@ -96,9 +104,11 @@ Dans ce cas spécifique, un paramètre de configuration sensible était validé 
   },
   {
     id: "ssrf-sdk-download",
+    program: "Open Source SDK",
     title: "SSRF via SDK Image Download Mechanism",
     severity: "Critical",
     category: "Server-Side Request Forgery",
+    hook: "Le SDK fetch() les URLs des messages sans aucun filtre. Un message utilisateur = une requête vers 169.254.169.254.",
     summary: "Vulnérabilité SSRF dans le mécanisme de téléchargement d'images/fichiers d'un SDK open-source populaire. Absence totale de validation sur les URLs côté serveur.",
     reasoning: `L'analyse par revue de code statique a révélé qu'un SDK largement utilisé téléchargeait automatiquement les URLs fournies dans les messages utilisateurs lorsque le modèle sous-jacent ne supportait pas nativement le passage d'URLs.
 
@@ -118,9 +128,11 @@ La preuve de concept a démontré deux scénarios : confirmation SSRF via un ser
   },
   {
     id: "iot-privesc-rce",
+    program: "CVE-2026-1185",
     title: "IoT Privilege Escalation via Action Template Hijacking",
     severity: "High",
     category: "Broken Access Control",
+    hook: "Template XML uploadé via D-Bus non authentifié → persisté sous le daemon → RCE au prochain reboot.",
     summary: "Escalade de privilèges sur un dispositif IoT permettant l'exécution de commandes arbitraires en tant que service daemon via injection de templates d'action XML.",
     reasoning: `L'analyse d'un dispositif IoT embarqué a révélé que le service interne de gestion d'actions chargeait des templates XML sans valider le contenu des balises de commande.
 
@@ -140,9 +152,11 @@ La preuve de concept a démontré la chaîne complète : création d'un template
   },
   {
     id: "idor-multi-tenant",
+    program: "Programme privé",
     title: "IDOR - Unauthorized Cross-Organization Data Modification",
     severity: "High",
     category: "Broken Access Control",
+    hook: "La policy existe, elle est correcte — elle n'est juste jamais appelée dans ce contrôleur. 20+ orgs modifiables.",
     summary: "Absence de contrôle d'autorisation sur un endpoint PATCH permettant à tout agent authentifié de modifier des données de n'importe quelle organisation sur une plateforme multi-tenant gouvernementale.",
     reasoning: `L'analyse d'une plateforme web multi-tenant de gestion de rendez-vous a révélé qu'un endpoint de mise à jour ne vérifiait pas l'appartenance organisationnelle de l'utilisateur.
 
@@ -162,10 +176,12 @@ L'énumération séquentielle des IDs a permis de modifier avec succès plus de 
   },
   {
     id: "hardcoded-creds-ekyc",
+    program: "Programme privé — Secteur bancaire",
     image: "bank.png",
     title: "Hardcoded API Key Granting Unauthenticated Admin Access to Production eKYC System",
     severity: "Critical",
     category: "Sensitive Information Disclosure",
+    hook: "Clé API dans le bundle JS public. Un curl suffit : rôle admin, user_id 1, 42 705 dossiers KYC en prod.",
     summary: "Clé API hardcodée dans le JavaScript client d'une application Next.js d'un secteur bancaire réglementé, permettant un accès administrateur non authentifié à l'intégralité du système eKYC de production.",
     reasoning: `L'analyse du bundle JavaScript client d'une application Next.js a révélé une clé API embarquée en clair dans les fichiers statiques publics. Cette clé était utilisée pour construire un header d'authentification Basic Auth côté frontend.
 
@@ -185,10 +201,12 @@ La même clé était également utilisée pour construire des tokens WebSocket, 
   },
   {
     id: "idor-gov-visio",
+    program: "Programme privé — Gouvernement",
     image: "idor-gov.png",
     title: "IDOR - Unauthenticated Access to PIN Codes & LiveKit Credentials on Government Visio Platform",
     severity: "High",
     category: "Insecure Direct Object Reference",
+    hook: "PIN capturé en public → room passe en restricted → PIN reste valide pour SIP. Accès persistant sans compte.",
     summary: "Exposition non authentifiée des codes PIN téléphoniques et tokens LiveKit d'une plateforme de visioconférence gouvernementale open source, avec contournement persistant après restriction d'accès.",
     reasoning: `L'analyse du code source public (Django REST Framework) a révélé que la permission sur l'endpoint de rooms autorisait les méthodes GET sans authentification. Le serializer exposait les codes PIN et générait des tokens LiveKit même pour des utilisateurs anonymes.
 
@@ -208,10 +226,13 @@ Le vecteur d'attaque le plus critique : la règle de dispatch SIP ne vérifie pa
   },
   {
     id: "ssrf-wordpress-plugin",
+    program: "AuCOFFRE",
+    reward: "€800",
     image: "ssrf-10.png",
     title: "SSRF via WordPress AI Plugin – Arbitrary Internal Request Forgery",
     severity: "Critical",
     category: "Server-Side Request Forgery",
+    hook: "wp_ajax_nopriv_ + wp_remote_get sans aucune validation. Zéro auth, zéro filtre — CVSS 9.3.",
     summary: "Vulnérabilité SSRF dans un plugin WordPress d'assistant IA permettant de forcer le serveur à effectuer des requêtes HTTP arbitraires vers des ressources internes ou externes, sans authentification.",
     reasoning: `L'analyse du plugin ciblé a révélé un endpoint AJAX exposé sans vérification d'authentification (nopriv). Cet endpoint acceptait une URL fournie par l'utilisateur et déclenchait une requête HTTP côté serveur via l'API WordPress (wp_remote_get).
 
@@ -231,10 +252,12 @@ L'exploitation ne nécessitait aucun compte ni session — un simple appel HTTP 
   },
   {
     id: "xss-stored-gov-sanitizer",
+    program: "DINUM — Agora Gouv",
     image: "gov-xss-strored.png",
     title: "Stored XSS via ContentSanitizer Bypass (htmlUnescape after sanitize) on Government Platform",
     severity: "High",
     category: "Cross-Site Scripting (XSS)",
+    hook: "sanitize() encode &lt; en entité. htmlUnescape() la redécode en <. Le sanitizer défait son propre travail.",
     summary: "Vulnérabilité XSS stockée sur une plateforme de participation citoyenne gouvernementale, due à un ordre d'opérations incorrect dans le sanitizer backend : htmlUnescape() appliqué après sanitize(), recréant des tags HTML depuis les entités encodées survivantes.",
     reasoning: `L'analyse du code source public du backend (Kotlin) a révélé une faille logique dans ContentSanitizer.kt : la fonction appelait HtmlUtils.htmlUnescape() après policyFactory.sanitize(), inversant l'ordre attendu.
 
@@ -254,12 +277,13 @@ La surface de rendu identifiée était le frontend Nuxt.js qui récupérait les 
   },
   {
     id: "securedrop-rce",
+    program: "SecureDrop — Freedom of the Press Foundation",
+    reward: "$2,500",
     image: "primitive-rce.png",
     title: "Bypass of 0.17.1 Path Traversal Fix → Arbitrary File Overwrite → RCE via SQLite FTS3 Tokenizer Pointer Overwrite (SecureDrop)",
     severity: "Critical",
     category: "Remote Code Execution",
-    program: "SecureDrop (Freedom of the Press Foundation)",
-    reward: "$2,500",
+    hook: "check_path_traversal() se base elle-même comme racine → joinpath() drop le dest_dir → DB écrasée → SIGSEGV.",
     cvss: "P4",
     summary: "Bypass complet du patch CVE-2025-24888 dans le client Python de SecureDrop : check_path_traversal() accepte silencieusement les chemins absolus, permettant à un serveur compromis d'écraser svs.sqlite avec une base SQLite forgée qui déclenche un SIGSEGV à adresse contrôlée via le mécanisme fts3_tokenizer() de SQLite — sans interaction utilisateur.",
     reasoning: `L'analyse a débuté sur le correctif de la version 0.17.1 (commit 90b8c4c, CVE-2025-24888), censé bloquer les path traversals dans les headers GZIP FNAME. La review de check_path_traversal() (utils.py:129-151) a révélé un défaut logique : lorsque le chemin est absolu, la fonction utilise ce chemin comme base_path, rendant relative_filepath() triviale, et skip la vérification secondaire grâce à is_absolute(). Résultat : tout chemin absolu passe sans exception.
@@ -448,82 +472,93 @@ const securityServices = [
       <div class="reports-grid">
         {bugBountyReports.map((report, index) => (
           <article class={`report-card sev-${report.severity.toLowerCase()}`} data-animate="report" data-index={index}>
-            <span class="report-watermark font-mono">{String(index + 1).padStart(2, '0')}</span>
-            <div class="report-header">
-              <div class="report-meta">
-                <span class={`severity-badge severity-${report.severity.toLowerCase()} font-mono`}>
+
+            <!-- Accent line -->
+            <div class="card-accent"></div>
+
+            <!-- Card header -->
+            <div class="card-top">
+              <div class="card-meta">
+                <span class={`sev-pill sev-pill-${report.severity.toLowerCase()}`}>
+                  <span class="sev-dot"></span>
                   {report.severity}
                 </span>
-                <span class="report-category font-mono">{report.category}</span>
+                <span class="cat-label font-mono">{report.category}</span>
               </div>
-              <span class="report-number font-mono">#{String(index + 1).padStart(2, '0')}</span>
+              {report.reward && (
+                <span class="reward-badge">{report.reward}</span>
+              )}
             </div>
 
-            <h3 class="report-title">{report.title}</h3>
-            <p class={`report-summary${report.image ? ' no-border' : ''}`}>{report.summary}</p>
+            <!-- Card body (always visible) -->
+            <div class="card-body">
+              {report.program && (
+                <p class="card-program font-mono">{report.program}</p>
+              )}
+              <h3 class="card-title">{report.title}</h3>
+              {report.hook && (
+                <p class="card-hook">{report.hook}</p>
+              )}
+              {report.image && (
+                <div class="card-image-wrap">
+                  <img
+                    src={`${base}bugbounty/${report.image}`}
+                    alt={`PoC – ${report.title}`}
+                    class="card-img"
+                    loading="lazy"
+                  />
+                </div>
+              )}
+            </div>
 
-            {report.image && (
-              <div class="report-image-wrapper">
-                <img
-                  src={`${base}bugbounty/${report.image}`}
-                  alt={`Preuve de concept – ${report.title}`}
-                  class="report-image"
-                  loading="lazy"
-                />
+            <!-- Toggle -->
+            <button class="card-toggle" aria-expanded="false">
+              <span class="toggle-label">Voir le détail</span>
+              <svg class="toggle-icon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                <path d="M6 9l6 6 6-6"/>
+              </svg>
+            </button>
+
+            <!-- Expandable detail -->
+            <div class="card-detail">
+            <div class="card-detail-inner">
+              <div class="detail-section">
+                <h4 class="detail-label">Raisonnement</h4>
+                <div class="detail-reasoning">
+                  {report.reasoning.split('\n\n').map((p) => (
+                    <p>{p}</p>
+                  ))}
+                </div>
               </div>
-            )}
 
-            <div class="report-section">
-              <h4 class="section-label">
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                  <circle cx="12" cy="12" r="10"/>
-                  <path d="M12 16v-4M12 8h.01"/>
-                </svg>
-                Raisonnement & Méthodologie
-              </h4>
-              <div class="reasoning-content">
-                {report.reasoning.split('\n\n').map((paragraph) => (
-                  <p>{paragraph}</p>
+              <div class="detail-section">
+                <h4 class="detail-label">Impact</h4>
+                <p class="detail-impact">{report.impact}</p>
+              </div>
+
+              <div class="detail-section">
+                <h4 class="detail-label">Remédiation</h4>
+                <ul class="detail-fixes">
+                  {report.fixes.map((fix) => (
+                    <li>
+                      <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                        <path d="m9 12 2 2 4-4"/>
+                        <circle cx="12" cy="12" r="10"/>
+                      </svg>
+                      {fix}
+                    </li>
+                  ))}
+                </ul>
+              </div>
+
+              <div class="detail-tags">
+                {report.methodology.map((step) => (
+                  <span class="detail-tag font-mono">{step}</span>
                 ))}
               </div>
             </div>
-
-            <div class="report-section">
-              <h4 class="section-label">
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                  <path d="M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/>
-                  <path d="M12 9v4M12 17h.01"/>
-                </svg>
-                Impact
-              </h4>
-              <p class="impact-text">{report.impact}</p>
             </div>
 
-            <div class="report-section">
-              <h4 class="section-label">
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                  <path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/>
-                </svg>
-                Remédiation
-              </h4>
-              <ul class="fixes-list">
-                {report.fixes.map((fix) => (
-                  <li>
-                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                      <path d="M12 22c5.523 0 10-4.477 10-10S17.523 2 12 2 2 6.477 2 12s4.477 10 10 10z"/>
-                      <path d="m9 12 2 2 4-4"/>
-                    </svg>
-                    <span>{fix}</span>
-                  </li>
-                ))}
-              </ul>
-            </div>
-
-            <div class="methodology-tags">
-              {report.methodology.map((step) => (
-                <span class="method-tag font-mono">{step}</span>
-              ))}
-            </div>
           </article>
         ))}
       </div>
@@ -554,6 +589,16 @@ const securityServices = [
   gsap.registerPlugin(ScrollTrigger);
 
   document.addEventListener('DOMContentLoaded', () => {
+    // Card expand/collapse
+    document.querySelectorAll('.card-toggle').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const card = btn.closest('.report-card');
+        const isExpanded = card.classList.toggle('expanded');
+        btn.setAttribute('aria-expanded', String(isExpanded));
+        btn.querySelector('.toggle-label').textContent = isExpanded ? 'Réduire' : 'Voir le détail';
+      });
+    });
+
     // Hero animations
     const tl = gsap.timeline({ defaults: { ease: 'power4.out' } });
 
@@ -1110,297 +1155,295 @@ const securityServices = [
     margin: 24px 0 0;
   }
 
+  /* ── Grid ── */
   .reports-grid {
-    display: flex;
-    flex-direction: column;
-    gap: 40px;
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 20px;
+    align-items: start;
   }
 
-  /* Report Card */
-  /* Severity color tokens */
+  @media (max-width: 900px) {
+    .reports-grid { grid-template-columns: 1fr; }
+  }
+
+  /* ── Severity tokens ── */
   .report-card.sev-critical { --sev: #ef4444; --sev-rgb: 239, 68, 68; }
   .report-card.sev-high     { --sev: #fb923c; --sev-rgb: 251, 146, 60; }
   .report-card.sev-medium   { --sev: #facc15; --sev-rgb: 250, 204, 21; }
 
+  /* ── Card shell ── */
   .report-card {
     position: relative;
-    padding: 48px;
-    background: linear-gradient(
-      135deg,
-      rgba(255, 255, 255, 0.03) 0%,
-      rgba(var(--sev-rgb, 239, 68, 68), 0.04) 100%
-    );
-    border: 1px solid rgba(255, 255, 255, 0.07);
-    border-radius: 24px;
-    transition: all 0.45s cubic-bezier(0.4, 0, 0.2, 1);
+    background: rgba(255, 255, 255, 0.04);
+    border: 1px solid rgba(255, 255, 255, 0.09);
+    border-radius: 20px;
     overflow: hidden;
-    backdrop-filter: blur(8px);
-  }
-
-  /* Permanent top accent bar */
-  .report-card::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: 10%;
-    right: 10%;
-    height: 2px;
-    background: linear-gradient(90deg, transparent, var(--sev, #ef4444), transparent);
-    opacity: 0.5;
-    transition: opacity 0.3s ease, left 0.3s ease, right 0.3s ease;
-  }
-
-  /* Left glow strip */
-  .report-card::after {
-    content: '';
-    position: absolute;
-    left: 0;
-    top: 15%;
-    bottom: 15%;
-    width: 3px;
-    background: linear-gradient(to bottom, transparent, var(--sev, #ef4444), transparent);
-    opacity: 0.4;
-    border-radius: 0 2px 2px 0;
-    transition: opacity 0.3s ease, top 0.3s ease, bottom 0.3s ease;
-  }
-
-  .report-card:hover::before {
-    opacity: 1;
-    left: 0;
-    right: 0;
-  }
-
-  .report-card:hover::after {
-    opacity: 0.85;
-    top: 5%;
-    bottom: 5%;
+    transition: transform 0.3s ease, box-shadow 0.3s ease, border-color 0.3s ease;
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
   }
 
   .report-card:hover {
-    border-color: rgba(var(--sev-rgb, 239, 68, 68), 0.25);
-    transform: translateY(-6px);
+    transform: translateY(-4px);
+    border-color: rgba(var(--sev-rgb, 239, 68, 68), 0.3);
     box-shadow:
-      0 30px 60px rgba(var(--sev-rgb, 239, 68, 68), 0.12),
-      0 0 0 1px rgba(var(--sev-rgb, 239, 68, 68), 0.08) inset;
-    background: linear-gradient(
-      135deg,
-      rgba(255, 255, 255, 0.045) 0%,
-      rgba(var(--sev-rgb, 239, 68, 68), 0.07) 100%
-    );
+      0 20px 60px rgba(0, 0, 0, 0.4),
+      0 0 0 1px rgba(var(--sev-rgb, 239, 68, 68), 0.1) inset;
   }
 
-  /* Watermark number */
-  .report-watermark {
-    position: absolute;
-    top: 24px;
-    right: 36px;
-    font-size: 96px;
-    font-weight: 800;
-    line-height: 1;
-    letter-spacing: -0.06em;
-    color: transparent;
-    -webkit-text-stroke: 1px rgba(var(--sev-rgb, 239, 68, 68), 0.12);
-    pointer-events: none;
-    user-select: none;
-    transition: -webkit-text-stroke-color 0.3s ease;
+  /* ── Top accent ── */
+  .card-accent {
+    height: 1px;
+    background: linear-gradient(90deg, transparent 0%, var(--sev, #ef4444) 40%, var(--sev, #ef4444) 60%, transparent 100%);
+    opacity: 0.6;
+    transition: opacity 0.3s ease;
   }
 
-  .report-card:hover .report-watermark {
-    -webkit-text-stroke-color: rgba(var(--sev-rgb, 239, 68, 68), 0.22);
-  }
+  .report-card:hover .card-accent { opacity: 1; }
 
-  .report-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: flex-start;
-    margin-bottom: 24px;
-  }
-
-  .report-meta {
+  /* ── Top row ── */
+  .card-top {
     display: flex;
     align-items: center;
-    gap: 12px;
+    justify-content: space-between;
+    padding: 18px 22px 0;
   }
 
-  .severity-badge {
-    padding: 6px 14px;
-    border-radius: 100px;
-    font-size: 11px;
-    text-transform: uppercase;
-    letter-spacing: 0.1em;
-    font-weight: 600;
-  }
-
-  .severity-critical {
-    background: rgba(239, 68, 68, 0.15);
-    color: #ef4444;
-    border: 1px solid rgba(239, 68, 68, 0.3);
-  }
-
-  .severity-high {
-    background: rgba(251, 146, 60, 0.15);
-    color: #fb923c;
-    border: 1px solid rgba(251, 146, 60, 0.3);
-  }
-
-  .severity-medium {
-    background: rgba(250, 204, 21, 0.15);
-    color: #facc15;
-    border: 1px solid rgba(250, 204, 21, 0.3);
-  }
-
-  .report-category {
-    font-size: 11px;
-    color: var(--text-muted);
-    text-transform: uppercase;
-    letter-spacing: 0.1em;
-  }
-
-  .report-number {
-    font-size: 14px;
-    color: var(--text-muted);
-    letter-spacing: 0.1em;
-  }
-
-  .report-title {
-    font-size: clamp(24px, 3vw, 32px);
-    font-weight: 600;
-    margin: 0 0 16px;
-    letter-spacing: -0.02em;
-  }
-
-  .report-summary {
-    font-size: 16px;
-    line-height: 1.7;
-    color: var(--text-secondary);
-    margin: 0 0 32px;
-    padding-bottom: 32px;
-    border-bottom: 1px solid rgba(255, 255, 255, 0.05);
-  }
-
-  .report-summary.no-border {
-    border-bottom: none;
-    padding-bottom: 16px;
-    margin-bottom: 0;
-  }
-
-  .report-image-wrapper {
-    margin: 0 0 32px;
-    padding-bottom: 32px;
-    border-bottom: 1px solid rgba(255, 255, 255, 0.05);
-    border-radius: 8px;
-    overflow: hidden;
-  }
-
-  .report-image {
-    width: 100%;
-    height: auto;
-    display: block;
-    border-radius: 8px;
-    border: 1px solid rgba(255, 255, 255, 0.08);
-  }
-
-  .report-section {
-    margin-bottom: 32px;
-  }
-
-  .section-label {
+  .card-meta {
     display: flex;
     align-items: center;
     gap: 10px;
-    font-size: 13px;
-    font-weight: 600;
-    color: var(--text-secondary);
+    min-width: 0;
+  }
+
+  .sev-pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 4px 10px;
+    border-radius: 100px;
+    font-size: 10px;
+    font-weight: 700;
     text-transform: uppercase;
-    letter-spacing: 0.1em;
+    letter-spacing: 0.08em;
+    flex-shrink: 0;
+  }
+
+  .sev-pill-critical { background: rgba(239,68,68,0.15); color: #ef4444; border: 1px solid rgba(239,68,68,0.25); }
+  .sev-pill-high     { background: rgba(251,146,60,0.15); color: #fb923c; border: 1px solid rgba(251,146,60,0.25); }
+  .sev-pill-medium   { background: rgba(250,204,21,0.15); color: #facc15; border: 1px solid rgba(250,204,21,0.25); }
+
+  .sev-dot {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: currentColor;
+    box-shadow: 0 0 6px currentColor;
+    flex-shrink: 0;
+  }
+
+  .cat-label {
+    font-size: 10px;
+    color: var(--text-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .reward-badge {
+    display: inline-flex;
+    align-items: center;
+    padding: 4px 12px;
+    background: rgba(74, 222, 128, 0.1);
+    border: 1px solid rgba(74, 222, 128, 0.25);
+    border-radius: 100px;
+    font-size: 12px;
+    font-weight: 700;
+    color: #4ade80;
+    flex-shrink: 0;
+    letter-spacing: 0.02em;
+  }
+
+  /* ── Card body ── */
+  .card-body {
+    padding: 14px 22px 20px;
+  }
+
+  .card-program {
+    font-size: 10px;
+    color: var(--text-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.12em;
+    margin: 0 0 8px;
+  }
+
+  .card-title {
+    font-size: clamp(15px, 1.8vw, 18px);
+    font-weight: 600;
+    letter-spacing: -0.02em;
+    line-height: 1.35;
+    margin: 0 0 14px;
+    color: var(--text-primary);
+  }
+
+  .card-hook {
+    font-size: 13px;
+    line-height: 1.6;
+    color: var(--text-secondary);
+    font-style: italic;
     margin: 0 0 16px;
-  }
-
-  .section-label svg {
-    color: #ef4444;
-  }
-
-  .reasoning-content {
-    display: flex;
-    flex-direction: column;
-    gap: 16px;
-  }
-
-  .reasoning-content p {
-    font-size: 15px;
-    line-height: 1.8;
-    color: var(--text-secondary);
-    margin: 0;
-  }
-
-  .impact-text {
-    font-size: 15px;
-    line-height: 1.7;
-    color: var(--text-secondary);
-    margin: 0;
-    padding: 16px 20px;
-    background: rgba(var(--sev-rgb, 239, 68, 68), 0.06);
-    border-left: 3px solid var(--sev, #ef4444);
+    padding: 10px 14px;
+    background: rgba(var(--sev-rgb, 239, 68, 68), 0.05);
+    border-left: 2px solid rgba(var(--sev-rgb, 239, 68, 68), 0.5);
     border-radius: 0 8px 8px 0;
   }
 
-  .fixes-list {
-    list-style: none;
-    padding: 0;
-    margin: 0;
+  .card-image-wrap {
+    border-radius: 10px;
+    overflow: hidden;
+    border: 1px solid rgba(255, 255, 255, 0.07);
+  }
+
+  .card-img {
+    width: 100%;
+    height: auto;
+    display: block;
+  }
+
+  /* ── Toggle button ── */
+  .card-toggle {
+    width: 100%;
+    padding: 13px 22px;
+    border: none;
+    border-top: 1px solid rgba(255, 255, 255, 0.06);
+    background: transparent;
+    color: var(--text-muted);
+    font-size: 12px;
+    font-weight: 500;
+    letter-spacing: 0.04em;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 7px;
+    transition: color 0.2s ease, background 0.2s ease;
+  }
+
+  .card-toggle:hover {
+    color: var(--text-primary);
+    background: rgba(255, 255, 255, 0.03);
+  }
+
+  .toggle-icon {
+    transition: transform 0.3s ease;
+    flex-shrink: 0;
+  }
+
+  .report-card.expanded .toggle-icon {
+    transform: rotate(180deg);
+  }
+
+  /* ── Expandable detail ── */
+  .card-detail {
     display: grid;
-    grid-template-columns: repeat(2, 1fr);
+    grid-template-rows: 0fr;
+    transition: grid-template-rows 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  .card-detail-inner {
+    overflow: hidden;
+  }
+
+  .report-card.expanded .card-detail {
+    grid-template-rows: 1fr;
+  }
+
+  .detail-section {
+    padding: 20px 22px 0;
+  }
+
+  .detail-section:last-of-type {
+    padding-bottom: 4px;
+  }
+
+  .detail-label {
+    font-size: 10px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.12em;
+    color: var(--text-muted);
+    margin: 0 0 10px;
+  }
+
+  .detail-reasoning {
+    display: flex;
+    flex-direction: column;
     gap: 12px;
   }
 
-  .fixes-list li {
+  .detail-reasoning p {
+    font-size: 13px;
+    line-height: 1.75;
+    color: var(--text-secondary);
+    margin: 0;
+  }
+
+  .detail-impact {
+    font-size: 13px;
+    line-height: 1.65;
+    color: var(--text-secondary);
+    margin: 0;
+    padding: 12px 16px;
+    background: rgba(var(--sev-rgb, 239, 68, 68), 0.06);
+    border-left: 2px solid var(--sev, #ef4444);
+    border-radius: 0 8px 8px 0;
+  }
+
+  .detail-fixes {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  .detail-fixes li {
     display: flex;
     align-items: flex-start;
-    gap: 10px;
+    gap: 9px;
     font-size: 13px;
     line-height: 1.5;
     color: var(--text-secondary);
-    padding: 12px 16px;
-    background: rgba(255, 255, 255, 0.02);
-    border: 1px solid rgba(255, 255, 255, 0.06);
-    border-radius: 10px;
-    transition: all 0.3s ease;
   }
 
-  .fixes-list li:hover {
-    background: rgba(var(--sev-rgb, 239, 68, 68), 0.05);
-    border-color: rgba(var(--sev-rgb, 239, 68, 68), 0.2);
-  }
-
-  .fixes-list li svg {
-    color: var(--text-muted);
+  .detail-fixes li svg {
+    color: var(--sev, #ef4444);
     flex-shrink: 0;
-    margin-top: 1px;
+    margin-top: 2px;
   }
 
-  @media (max-width: 768px) {
-    .fixes-list {
-      grid-template-columns: 1fr;
-    }
-  }
-
-  .methodology-tags {
+  .detail-tags {
     display: flex;
     flex-wrap: wrap;
-    gap: 10px;
-    padding-top: 24px;
+    gap: 8px;
+    padding: 16px 22px 22px;
     border-top: 1px solid rgba(255, 255, 255, 0.05);
+    margin-top: 16px;
   }
 
-  .method-tag {
-    padding: 8px 16px;
+  .detail-tag {
+    padding: 5px 12px;
     background: rgba(255, 255, 255, 0.03);
-    border: 1px solid rgba(255, 255, 255, 0.1);
+    border: 1px solid rgba(255, 255, 255, 0.08);
     border-radius: 100px;
-    font-size: 11px;
+    font-size: 10px;
     color: var(--text-muted);
     text-transform: uppercase;
-    letter-spacing: 0.05em;
+    letter-spacing: 0.06em;
   }
 
   /* CTA Section */
