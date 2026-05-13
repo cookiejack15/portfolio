@@ -31,10 +31,6 @@ const base = import.meta.env.BASE_URL;
         />
       </div>
 
-      <div class="hero-badge" data-gsap="badge">
-        <span class="badge-dot"></span>
-        <span class="badge-text font-mono">Disponible pour missions</span>
-      </div>
 
       <h1 class="hero-title" data-gsap="title">
         <span class="title-name">ISMAIL CHIBA</span>
@@ -309,13 +305,6 @@ const base = import.meta.env.BASE_URL;
       { opacity: 1, scale: 1, duration: 0.8, ease: 'back.out(1.4)' }
     );
 
-    // Badge
-    tl.fromTo('[data-gsap="badge"]',
-      { opacity: 0, y: 30, scale: 0.9 },
-      { opacity: 1, y: 0, scale: 1, duration: 1 },
-      '-=0.3'
-    );
-
     // Title
     tl.fromTo('[data-gsap="title"]',
       { y: 80, opacity: 0, scale: 0.95 },
@@ -482,8 +471,8 @@ const base = import.meta.env.BASE_URL;
 
   /* Avatar */
   .hero-avatar {
-    width: 130px;
-    height: 130px;
+    width: 170px;
+    height: 170px;
     border-radius: 50%;
     margin-bottom: 32px;
     position: relative;
@@ -515,11 +504,11 @@ const base = import.meta.env.BASE_URL;
   }
 
   .avatar-img {
-    width: 130px;
-    height: 130px;
+    width: 170px;
+    height: 170px;
     border-radius: 50%;
     object-fit: cover;
-    object-position: center top;
+    object-position: center 15%;
     display: block;
     position: relative;
     z-index: 1;
