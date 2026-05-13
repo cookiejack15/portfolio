@@ -8,7 +8,7 @@ const projects = [
     title: "Spruce",
     description: "Plateforme de prospection LinkedIn IA — de l'import du lead à la signature client. 8 étapes automatisées, scan IA des profils, anti-détection avancée et dashboard ROI temps réel.",
     tags: ["IA / LLM", "LinkedIn", "Automatisation", "CRM", "Playwright"],
-    image: `${base}projects/working-01.webp`,
+    image: `${base}projects/spruce-icon.png`,
     link: `${base}projects/spruce`,
     highlights: [
       "Pipeline complet import → closing",
@@ -671,6 +671,12 @@ const projects = [
     height: 100%;
     object-fit: cover;
     transition: transform 0.5s ease;
+  }
+
+  .card-image img[src*="spruce-icon"] {
+    object-fit: contain;
+    padding: 28px;
+    background: #0d2318;
   }
 
   .project-card:hover .card-image img {
