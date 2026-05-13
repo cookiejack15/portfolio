@@ -251,6 +251,40 @@ La surface de rendu identifiée était le frontend Nuxt.js qui récupérait les 
       "Remplacer l'interpolation innerHTML par la syntaxe Vue {{ }} (auto-escaping) pour les champs user-controlled",
       "Ne pas stocker du HTML décodé en base — conserver les entités encodées jusqu'au rendu"
     ]
+  },
+  {
+    id: "securedrop-rce",
+    image: "primitive-rce.png",
+    title: "Bypass of 0.17.1 Path Traversal Fix → Arbitrary File Overwrite → RCE via SQLite FTS3 Tokenizer Pointer Overwrite (SecureDrop)",
+    severity: "Critical",
+    category: "Remote Code Execution",
+    program: "SecureDrop (Freedom of the Press Foundation)",
+    reward: "$2,500",
+    cvss: "P4",
+    summary: "Bypass complet du patch CVE-2025-24888 dans le client Python de SecureDrop : check_path_traversal() accepte silencieusement les chemins absolus, permettant à un serveur compromis d'écraser svs.sqlite avec une base SQLite forgée qui déclenche un SIGSEGV à adresse contrôlée via le mécanisme fts3_tokenizer() de SQLite — sans interaction utilisateur.",
+    reasoning: `L'analyse a débuté sur le correctif de la version 0.17.1 (commit 90b8c4c, CVE-2025-24888), censé bloquer les path traversals dans les headers GZIP FNAME. La review de check_path_traversal() (utils.py:129-151) a révélé un défaut logique : lorsque le chemin est absolu, la fonction utilise ce chemin comme base_path, rendant relative_filepath() triviale, et skip la vérification secondaire grâce à is_absolute(). Résultat : tout chemin absolu passe sans exception.
+
+Trois bugs combinés permettent l'écriture arbitraire :
+1. check_path_traversal() ne rejette pas les chemins absolus
+2. Path.joinpath() avec un chemin absolu remplace silencieusement le répertoire de destination
+3. TOCTOU : le fichier est ouvert (open(dest_path, "wb")) avant la validation — même un refus tardif tronque déjà la cible
+
+La primitive d'écriture étant limitée à sdc_home, l'escalade vers du RCE exploite SQLite : un svs.sqlite forgé contient une contrainte CHECK avec fts3_tokenizer('simple', X'4141414141414141'), une table FTS3 virtuelle _ft, et une VIEW files qui référence _ft. Lors du sync suivant, update_sources() insère une source → CHECK s'évalue → le pointeur du tokenizer 'simple' dans la hash table FTS3 est écrasé à 0x4141414141414141. get_local_files() interroge ensuite files → la VIEW expand → _ft est accédé → SQLite déréférence 0x4141414141414141 comme sqlite3_tokenizer_module* → SIGSEGV.
+
+Conditions confirmées sur Debian 12 Bookworm (prod SecureDrop) : SQLite 3.40.1 compilé avec -DSQLITE_ENABLE_FTS3_TOKENIZER=1 (debian/rules du source package), Python 3.11.2 sans appel sqlite3_db_config() (CPython 3.11.2 connection.c), PRAGMA trusted_schema = 1.`,
+    impact: "RCE (SIGSEGV à adresse contrôlée, exit 139) sur la workstation journaliste dans l'architecture Qubes sd-app VM, sans interaction utilisateur. La chaîne d'exploitation complète ne nécessite qu'un serveur SecureDrop compromis : craft du GZIP → chiffrement GPG avec la clé publique du journaliste → livraison comme soumission source → sync automatique → crash.",
+    methodology: [
+      "Review du patch 0.17.1 (commit 90b8c4c) et identification du bypass check_path_traversal() pour chemins absolus",
+      "Analyse du TOCTOU open(path, 'wb') avant validation + Path.joinpath() absolute path replacement",
+      "Craft d'un svs.sqlite malveillant avec CHECK constraint fts3_tokenizer + FTS3 virtual table + VIEW files",
+      "Démonstration du SIGSEGV sur Docker debian:bookworm (Python 3.11.2, SQLite 3.40.1 avec ENABLE_FTS3_TOKENIZER=1)",
+      "Vérification de la chaîne complète : GZIP FNAME absolu → écriture base → sync → pointer overwrite → crash"
+    ],
+    fixes: [
+      "Sanitize vers basename dans read_gzip_header_filename() : original_filename = Path(original_filename).name",
+      "Rejeter explicitement les chemins absolus dans check_path_traversal() : lever ValueError si is_absolute()",
+      "Ouvrir le fichier destination APRÈS validation, pas avant (élimination du TOCTOU)"
+    ]
   }
 ];
 
