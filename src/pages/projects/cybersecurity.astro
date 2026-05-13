@@ -162,6 +162,7 @@ L'énumération séquentielle des IDs a permis de modifier avec succès plus de 
   },
   {
     id: "hardcoded-creds-ekyc",
+    image: "bank.png",
     title: "Hardcoded API Key Granting Unauthenticated Admin Access to Production eKYC System",
     severity: "Critical",
     category: "Sensitive Information Disclosure",
@@ -184,6 +185,7 @@ La même clé était également utilisée pour construire des tokens WebSocket, 
   },
   {
     id: "idor-gov-visio",
+    image: "idor-gov.png",
     title: "IDOR - Unauthenticated Access to PIN Codes & LiveKit Credentials on Government Visio Platform",
     severity: "High",
     category: "Insecure Direct Object Reference",
@@ -202,6 +204,52 @@ Le vecteur d'attaque le plus critique : la règle de dispatch SIP ne vérifie pa
       "Régénérer le PIN lors de chaque changement d'access_level vers restricted",
       "Vérifier l'access_level dans la règle de dispatch SIP côté téléphonie",
       "Exiger l'authentification pour les méthodes GET sur l'endpoint rooms"
+    ]
+  },
+  {
+    id: "ssrf-wordpress-plugin",
+    image: "ssrf-10.png",
+    title: "SSRF via WordPress AI Plugin – Arbitrary Internal Request Forgery",
+    severity: "Critical",
+    category: "Server-Side Request Forgery",
+    summary: "Vulnérabilité SSRF dans un plugin WordPress d'assistant IA permettant de forcer le serveur à effectuer des requêtes HTTP arbitraires vers des ressources internes ou externes, sans authentification.",
+    reasoning: `L'analyse du plugin ciblé a révélé un endpoint AJAX exposé sans vérification d'authentification (nopriv). Cet endpoint acceptait une URL fournie par l'utilisateur et déclenchait une requête HTTP côté serveur via l'API WordPress (wp_remote_get).
+
+Aucune validation n'était effectuée sur l'URL entrante : ni filtrage des IP privées (127.0.0.1, 10.x.x.x, 192.168.x.x), ni blocage des schémas de protocole alternatifs (file://, dict://, gopher://), ni protection contre le DNS rebinding.
+
+La preuve de concept a démontré la capacité d'atteindre des services internes non exposés publiquement, de lire des fichiers sensibles via le schéma file://, et de simuler le vol de credentials cloud via l'endpoint de métadonnées AWS EC2 (169.254.169.254).
+
+L'exploitation ne nécessitait aucun compte ni session — un simple appel HTTP POST suffisait. Le score CVSS calculé était de 9.3/10.0 (Critical), avec un vecteur d'attaque réseau, aucune interaction utilisateur requise, et un impact potentiel sur la confidentialité, l'intégrité et la disponibilité.`,
+    impact: "Accès aux services internes du réseau hébergeant le serveur WordPress, vol de credentials cloud (AWS IAM, metadata endpoint), lecture de fichiers système via file://, reconnaissance du réseau interne, potentielle compromission totale de l'infrastructure.",
+    methodology: ["Analyse du code source du plugin (endpoint AJAX nopriv)", "Identification de l'absence de validation d'URL", "PoC : accès aux métadonnées cloud et ressources internes", "Calcul CVSS et rapport détaillé — récompense €800"],
+    fixes: [
+      "Valider et filtrer les URLs : bloquer les IP privées, loopback et métadonnées cloud",
+      "Restreindre les schémas autorisés à HTTP/HTTPS uniquement",
+      "Ajouter une vérification d'authentification sur l'endpoint AJAX (wp_ajax_ au lieu de wp_ajax_nopriv_)",
+      "Implémenter une allowlist des domaines autorisés pour les requêtes externes"
+    ]
+  },
+  {
+    id: "xss-stored-gov-sanitizer",
+    image: "gov-xss-strored.png",
+    title: "Stored XSS via ContentSanitizer Bypass (htmlUnescape after sanitize) on Government Platform",
+    severity: "High",
+    category: "Cross-Site Scripting (XSS)",
+    summary: "Vulnérabilité XSS stockée sur une plateforme de participation citoyenne gouvernementale, due à un ordre d'opérations incorrect dans le sanitizer backend : htmlUnescape() appliqué après sanitize(), recréant des tags HTML depuis les entités encodées survivantes.",
+    reasoning: `L'analyse du code source public du backend (Kotlin) a révélé une faille logique dans ContentSanitizer.kt : la fonction appelait HtmlUtils.htmlUnescape() après policyFactory.sanitize(), inversant l'ordre attendu.
+
+L'OWASP HTML sanitizer traite les entités HTML (&lt;, &gt;) comme du contenu textuel, non comme des balises — il les préserve donc dans son output ré-encodé. htmlUnescape() les convertit ensuite en balises HTML actives, recréant exactement ce que le sanitizer était censé bloquer.
+
+Le payload d'injection : &lt;img src=x onerror=alert(document.domain)&gt; — 45 caractères d'entités — survivait à sanitize() puis était décodé en <img src=x onerror=alert(document.domain)> et stocké en base de données comme HTML brut.
+
+La surface de rendu identifiée était le frontend Nuxt.js qui récupérait les données de l'API publique et injectait le champ username via innerHTML (directive Vue.js v-html) dans un template CMS. Aucune interaction utilisateur n'était requise au-delà de visiter la page — le XSS s'exécutait automatiquement sur le domaine gouvernemental. La chaîne d'exploitation complète incluait le vol du loginToken déchiffrable depuis localStorage (AES-GCM, clé et token dans le même storage), permettant une prise de contrôle de compte permanente.`,
+    impact: "Exécution arbitraire de JavaScript sur un domaine gouvernemental (.gouv.fr), vol de session et prise de compte permanente via loginToken, phishing sur domaine de confiance, exfiltration de données, défacement de contenu gouvernemental, amplification possible via diffusion de l'URL publique.",
+    methodology: ["Revue de code source public (ContentSanitizer.kt)", "Identification de l'inversion d'ordre sanitize/unescape", "PoC sur sandbox : injection d'entités, vérification du payload stocké, démonstration de la chaîne XSS → account takeover", "Analyse du rendu frontend via innerHTML dans le bundle Nuxt.js"],
+    fixes: [
+      "Inverser l'ordre : htmlUnescape() AVANT sanitize() — décoder d'abord, puis filtrer les tags recréés",
+      "Échapper les données utilisateur côté frontend avant injection dans innerHTML",
+      "Remplacer l'interpolation innerHTML par la syntaxe Vue {{ }} (auto-escaping) pour les champs user-controlled",
+      "Ne pas stocker du HTML décodé en base — conserver les entités encodées jusqu'au rendu"
     ]
   }
 ];
@@ -377,7 +425,18 @@ const securityServices = [
             </div>
 
             <h3 class="report-title">{report.title}</h3>
-            <p class="report-summary">{report.summary}</p>
+            <p class={`report-summary${report.image ? ' no-border' : ''}`}>{report.summary}</p>
+
+            {report.image && (
+              <div class="report-image-wrapper">
+                <img
+                  src={`${base}bugbounty/${report.image}`}
+                  alt={`Preuve de concept – ${report.title}`}
+                  class="report-image"
+                  loading="lazy"
+                />
+              </div>
+            )}
 
             <div class="report-section">
               <h4 class="section-label">
@@ -1127,6 +1186,28 @@ const securityServices = [
     margin: 0 0 32px;
     padding-bottom: 32px;
     border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+  }
+
+  .report-summary.no-border {
+    border-bottom: none;
+    padding-bottom: 16px;
+    margin-bottom: 0;
+  }
+
+  .report-image-wrapper {
+    margin: 0 0 32px;
+    padding-bottom: 32px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+    border-radius: 8px;
+    overflow: hidden;
+  }
+
+  .report-image {
+    width: 100%;
+    height: auto;
+    display: block;
+    border-radius: 8px;
+    border: 1px solid rgba(255, 255, 255, 0.08);
   }
 
   .report-section {
