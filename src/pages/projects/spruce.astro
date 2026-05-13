@@ -29,61 +29,65 @@ const techStackInfra = [
 
 const features = [
   {
-    icon: `<svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>`,
-    title: "Email Finder Propriétaire",
-    description: "Algorithme développé 100% en interne. 12 patterns × 4 stratégies = 120 combinaisons testées avec validation DNS MX."
+    icon: `<svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="2" width="20" height="20" rx="3"/><line x1="8" y1="10" x2="8" y2="18"/><line x1="8" y1="6" x2="8" y2="7"/><path d="M12 18v-5a2 2 0 0 1 4 0v5"/><line x1="12" y1="10" x2="12" y2="18"/></svg>`,
+    title: "Import de Leads",
+    description: "5 sources d'import : connexions LinkedIn, recherche par mots-clés, URL Sales Navigator, réactions de posts, ou import CSV."
   },
   {
-    icon: `<svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect width="18" height="10" x="3" y="11" rx="2"/><circle cx="12" cy="16" r="2"/><path d="M12 11V7a4 4 0 0 1 4-4h1a2 2 0 0 1 2 2v1"/><path d="M7 11V7a4 4 0 0 0-4-4"/><path d="M12 7v4"/></svg>`,
-    title: "Bot LinkedIn Intelligent",
-    description: "Scraping conversations, réponses contextuelles GPT-4, anti-détection avancé avec simulation comportement humain."
+    icon: `<svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M22 3H2l8 9.46V19l4 2v-8.54z"/></svg>`,
+    title: "Tri & Qualification",
+    description: "Filtrez automatiquement les profils sans photo, incomplets, inactifs, étudiants ou retraités avant de prospecter."
   },
   {
-    icon: `<svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M3 3v18h18"/><path d="m19 9-5 5-4-4-3 3"/></svg>`,
-    title: "Qualification Automatique",
-    description: "Classification COLD/WARM/HOT/SIGNED automatique avec détection d'intention et analyse de sentiment."
+    icon: `<svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="2"/><path d="M12 2v4M12 18v4M4.93 4.93l2.83 2.83M16.24 16.24l2.83 2.83M2 12h4M18 12h4M4.93 19.07l2.83-2.83M16.24 7.76l2.83-2.83"/></svg>`,
+    title: "Scan IA Spruce",
+    description: "L'IA analyse chaque profil et l'assigne au bon persona avant toute demande de connexion. Personnalisation dès le début."
   },
   {
-    icon: `<svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect width="20" height="16" x="2" y="4" rx="2"/><path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"/></svg>`,
-    title: "Campagnes Email",
-    description: "Configuration SMTP auto-détectée, génération de messages IA personnalisés, tracking des tentatives."
+    icon: `<svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M22 2L11 13"/><path d="M22 2L15 22 11 13 2 9l20-7z"/></svg>`,
+    title: "Prospection IA",
+    description: "Connexions et messages personnalisés envoyés automatiquement depuis votre compte LinkedIn. Anti-détection avancée incluse."
   },
   {
-    icon: `<svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><line x1="12" x2="12" y1="20" y2="10"/><line x1="18" x2="18" y1="20" y2="4"/><line x1="6" x2="6" y1="20" y2="14"/></svg>`,
-    title: "Analytics Temps Réel",
-    description: "Dashboard avec stats dynamiques, graphiques Chart.js, calculs de croissance automatiques."
+    icon: `<svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>`,
+    title: "Gestion des Réponses",
+    description: "Toutes vos conversations centralisées. Classification positive, neutre, négative. Aucun lead ne se perd."
   },
   {
-    icon: `<svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="2"/></svg>`,
-    title: "Kanban Drag & Drop",
-    description: "Gestion des prospects avec HTML5 natif, detection click vs hold, notes et tags personnalisés."
+    icon: `<svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/><line x1="2" y1="20" x2="22" y2="20"/></svg>`,
+    title: "Closing & Analytics",
+    description: "Pipeline de closing du premier RDV jusqu'à la signature. Dashboard ROI temps réel avec chaque étape de votre pipeline."
   },
+];
+
+const pipeline = [
+  { step: "01", title: "Importez vos Leads", description: "5 sources LinkedIn et CSV" },
+  { step: "02", title: "Triez et qualifiez", description: "Filtres avancés" },
+  { step: "03", title: "Scan IA", description: "Persona automatique" },
+  { step: "04", title: "Prospection IA", description: "Envoi automatique" },
+  { step: "05", title: "Gestion des réponses", description: "Conversations centralisées" },
+  { step: "06", title: "Setting", description: "Relances intelligentes" },
+  { step: "07", title: "Closing", description: "Du RDV à la signature" },
+  { step: "08", title: "Statistiques", description: "ROI en temps réel" },
+];
+
+const aiCapabilities = [
+  "Analyse du profil LinkedIn avant contact",
+  "Assignation automatique au bon persona",
+  "Messages de connexion personnalisés",
+  "Réponses contextuelles GPT-4",
+  "Classification des réponses (positif/neutre/négatif)",
+  "Relances intelligentes et timing optimal",
 ];
 
 const antiDetection = [
   "User-Agent rotation automatique",
-  "Délais aléatoires (200ms-5s)",
+  "Délais aléatoires (200ms–5s)",
   "Mouvements de souris simulés",
   "Scroll progressif naturel",
   "Typage humain (vélocité variable)",
   "Stealth mode Playwright",
   "Mobile emulation parfaite",
-];
-
-const emailAlgorithm = [
-  { step: "1", title: "Domaine entreprise", description: ".com, .fr → 24 combinaisons" },
-  { step: "2", title: "Gmail", description: ".com, .fr → 24 combinaisons" },
-  { step: "3", title: "Outlook/Hotmail", description: ".com, .fr → 48 combinaisons" },
-  { step: "4", title: "Yahoo", description: ".com, .fr → 24 combinaisons" },
-];
-
-const aiCapabilities = [
-  "Génération de réponses contextuelles",
-  "Analyse de sentiment conversationnel",
-  "Détection d'intention (RDV, questions, objections)",
-  "Création de résumés de conversations",
-  "Génération d'emails personnalisés",
-  "Prompt engineering dynamique",
 ];
 
 const securityFeatures = [
@@ -94,9 +98,17 @@ const securityFeatures = [
   "CORS configuré",
   "SSL/TLS Let's Encrypt",
 ];
+
+const differentiators = [
+  "Pipeline complet en un seul outil — de l'import du lead à la signature client",
+  "Scan IA qui analyse chaque profil avant de prospecter pour une personnalisation maximale",
+  "Anti-détection avancée avec simulation du comportement humain sur LinkedIn",
+  "Classification automatique des réponses (positif / neutre / négatif) par IA",
+  "Dashboard ROI temps réel avec chaque étape du pipeline commerciale",
+];
 ---
 
-<ProjectLayout title="ECHO Prospection - SDR IA" description="Agent SDR IA qui négocie, relance et classe les prospects automatiquement">
+<ProjectLayout title="Spruce - Prospection LinkedIn IA" description="De la recherche du Lead à la signature comme Client. Automatisez votre prospection LinkedIn de A à Z.">
   <Header />
 
   <main class="project-page">
@@ -111,9 +123,13 @@ const securityFeatures = [
         </a>
 
         <div class="project-hero-content">
-          <span class="project-tag font-mono">SDR IA</span>
-          <h1 class="project-title">ECHO Prospection</h1>
-          <p class="project-subtitle">Agent commercial IA qui automatise votre prospection de A à Z</p>
+          <div class="hero-logo-row">
+            <img src={`${base}projects/logo-principal-forest.svg`} alt="Spruce" class="spruce-logo" />
+          </div>
+          <span class="project-tag font-mono">Prospection IA LinkedIn</span>
+          <h1 class="project-title">Spruce</h1>
+          <p class="project-subtitle">De la recherche du Lead à la <em>signature comme Client.</em></p>
+          <p class="project-tagline">Prospecter en continu, intelligemment.</p>
         </div>
       </div>
     </section>
@@ -124,95 +140,83 @@ const securityFeatures = [
         <!-- Fixed Image Container -->
         <div class="scroll-image-container">
           <div class="scroll-images">
-            <img src={`${base}projects/echo-vitrine.png`} alt="ECHO Vitrine" class="scroll-img active" data-image="vitrine" />
-            <img src={`${base}projects/echo-dashboard.png`} alt="ECHO Dashboard" class="scroll-img" data-image="dashboard" />
+            <img src={`${base}projects/working-01.webp`} alt="Spruce Import" class="scroll-img active" data-image="import" />
+            <img src={`${base}projects/working-02.webp`} alt="Spruce Prospection" class="scroll-img" data-image="prospect" />
+            <img src={`${base}projects/screenshot-crm.jpg`} alt="Spruce CRM" class="scroll-img" data-image="crm" />
           </div>
         </div>
 
         <!-- Scrolling Content -->
         <div class="scroll-content">
-          <!-- Vitrine Section -->
-          <div class="content-block" data-trigger="vitrine">
+          <!-- Origin Section -->
+          <div class="content-block" data-trigger="import">
             <span class="content-label font-mono">L'origine</span>
-            <h2>Comment tout a commencé</h2>
+            <h2>Comment Spruce est né</h2>
             <p>
-              Un jour, un pote me demande : <em>"Tu penses que c'est possible de créer un SDR IA ?
-              Un truc qui prospecte, négocie et relance automatiquement ?"</em>
+              Un jour, un pote me demande : <em>"T'es capable de créer un outil qui prospecte tout seul sur LinkedIn ?"</em>
             </p>
             <p>
               Ma réponse ? <strong>"Laisse-moi essayer."</strong>
             </p>
             <p>
-              C'est comme ça qu'ECHO est né. From scratch. Le site vitrine, l'application,
-              l'extension Chrome - tout construit de zéro avec une obsession : automatiser
-              la prospection sans perdre le côté humain.
+              C'est comme ça que Spruce est né. From scratch. L'application, le pipeline, l'IA — tout construit de zéro avec une obsession : automatiser la prospection LinkedIn sans perdre l'aspect humain.
             </p>
           </div>
 
-          <div class="content-block" data-trigger="vitrine">
+          <div class="content-block" data-trigger="import">
             <span class="content-label font-mono">Le nom</span>
-            <h2>Pourquoi ECHO ?</h2>
+            <h2>Pourquoi Spruce ?</h2>
             <p>
-              <strong>ECHO</strong> - comme l'écho d'un son qui se répercute. Vos messages
-              résonnent, vos relances persistent, votre présence se fait entendre.
+              <strong>Spruce</strong> — comme l'épicéa, toujours vert, toujours présent. Un arbre robuste qui pousse en toutes conditions.
             </p>
             <p>
-              Et entre nous ? C'est aussi le nom d'un alien dans Ben 10. Un clin d'œil
-              à l'enfant en moi qui rêvait de créer des trucs cool.
+              Votre prospection, elle aussi, ne s'arrête jamais. Spruce prospecte pendant que vous dormez, relance pendant que vous pitchez, et classe pendant que vous closez.
             </p>
           </div>
 
-          <div class="content-block" data-trigger="vitrine">
+          <div class="content-block" data-trigger="import">
             <span class="content-label font-mono">Le problème</span>
-            <h2>La prospection, c'est l'enfer</h2>
+            <h2>La prospection LinkedIn, c'est l'enfer</h2>
             <p>
-              Chercher des contacts. Envoyer des messages. Relancer. Qualifier.
-              Recommencer. Pendant des heures. Chaque. Jour.
+              Sales Navigator. Excel. Messagerie LinkedIn. Séquences génériques. Relances oubliées. CRM mal adapté. Des outils éparpillés, des heures perdues à copier-coller.
             </p>
             <p>
-              Sans parler des limites LinkedIn qui vous bloquent au pire moment,
-              des prospects qui ghostent, des leads froids qu'on oublie...
-            </p>
-            <p>
-              <strong>ECHO résout tout ça.</strong>
+              <strong>Spruce réunit tout ça en un seul pipeline.</strong>
             </p>
           </div>
 
-          <!-- Dashboard Section -->
-          <div class="content-block" data-trigger="dashboard">
+          <!-- Prospect Section -->
+          <div class="content-block" data-trigger="prospect">
             <span class="content-label font-mono">La solution</span>
-            <h2>Un SDR qui bosse 24/7</h2>
+            <h2>8 étapes. Un seul outil.</h2>
             <p>
-              ECHO trouve les emails, enrichit les profils depuis LinkedIn,
-              engage des conversations personnalisées et relance au bon moment.
+              Spruce importe vos leads, les trie, les analyse avec l'IA, prospecte automatiquement, gère les réponses, programme les relances et suit le closing.
             </p>
             <p>
-              Vous définissez vos limites. L'IA respecte les restrictions LinkedIn.
-              Et vous reprenez la main quand vous voulez.
+              Vous définissez vos personas. L'IA respecte les restrictions LinkedIn. Et vous reprenez la main quand vous voulez.
             </p>
           </div>
 
-          <div class="content-block features-list" data-trigger="dashboard">
-            <h3>Ce qu'ECHO fait pour vous</h3>
+          <div class="content-block features-list" data-trigger="prospect">
+            <h3>Le pipeline complet</h3>
             <ul>
-              <li><strong>Email Finder</strong> - Algorithme propriétaire avec validation DNS MX</li>
-              <li><strong>Enrichissement</strong> - Récolte bio, expériences, posts et commentaires LinkedIn</li>
-              <li><strong>Négociation IA</strong> - Conversations personnalisées GPT-4</li>
-              <li><strong>Relances</strong> - Programmées avec délais personnalisables</li>
-              <li><strong>Classification</strong> - COLD/WARM/HOT/SIGNED automatiquement</li>
-              <li><strong>Anti-détection</strong> - Simulation comportement humain avancée</li>
-              <li><strong>Campagnes Email</strong> - SMTP auto-détecté (Gmail/Outlook)</li>
-              <li><strong>Extension Chrome</strong> - Connexion LinkedIn en un clic</li>
+              <li><strong>Import</strong> — 5 sources : LinkedIn, Sales Navigator, réactions, CSV</li>
+              <li><strong>Tri & Qualification</strong> — Filtre sans photo, inactifs, étudiants</li>
+              <li><strong>Scan IA</strong> — Analyse profil et assignation persona</li>
+              <li><strong>Prospection IA</strong> — Connexions et messages automatiques</li>
+              <li><strong>Réponses</strong> — Toutes les conversations centralisées</li>
+              <li><strong>Setting</strong> — Relances intelligentes au bon moment</li>
+              <li><strong>Closing</strong> — Du premier RDV à la signature</li>
+              <li><strong>Stats</strong> — Dashboard ROI en temps réel</li>
             </ul>
           </div>
 
-          <div class="content-block" data-trigger="dashboard">
+          <!-- CRM Section -->
+          <div class="content-block" data-trigger="crm">
             <span class="content-label font-mono">Contrôle</span>
             <h2>Vous gardez la main</h2>
             <p>
-              Contrairement aux bots stupides, ECHO vous laisse le contrôle total.
-              Reprenez n'importe quelle conversation. Ajustez les limites.
-              Sélectionnez qui relancer.
+              Contrairement aux bots LinkedIn génériques, Spruce vous laisse le contrôle total. Reprenez n'importe quelle conversation. Ajustez les personas. Sélectionnez qui relancer.
             </p>
             <p>
               <strong>L'IA travaille. Vous décidez.</strong>
@@ -238,15 +242,15 @@ const securityFeatures = [
       </div>
     </section>
 
-    <!-- Email Algorithm -->
+    <!-- Pipeline -->
     <section class="algorithm-section">
       <div class="container">
-        <h2 class="section-title">Algorithme Email Propriétaire</h2>
-        <p class="section-subtitle">Stratégie en cascade avec early return - 100% développé en interne</p>
+        <h2 class="section-title">Pipeline Complet</h2>
+        <p class="section-subtitle">8 étapes séquentielles — aucun lead ne se perd jamais</p>
 
-        <div class="algorithm-steps">
-          {emailAlgorithm.map((item) => (
-            <div class="algorithm-step">
+        <div class="pipeline-grid">
+          {pipeline.map((item) => (
+            <div class="pipeline-step">
               <span class="step-number">{item.step}</span>
               <div class="step-content">
                 <h3>{item.title}</h3>
@@ -254,16 +258,6 @@ const securityFeatures = [
               </div>
             </div>
           ))}
-        </div>
-
-        <div class="algorithm-info">
-          <h3>12 patterns d'emails testés</h3>
-          <p class="patterns">
-            john.doe • johndoe • john • doe • jdoe • johnd • john.d • j.doe • doe.john • doejohn • john_doe • john-doe
-          </p>
-          <p class="result">
-            <strong>Validation DNS MX native</strong> - Module DNS natif Node.js, pas d'envoi d'email réel (100% passif)
-          </p>
         </div>
       </div>
     </section>
@@ -289,7 +283,7 @@ const securityFeatures = [
     <section class="ai-section">
       <div class="container">
         <h2 class="section-title">Intelligence Artificielle</h2>
-        <p class="section-subtitle">GPT-4 pour des conversations naturelles et contextuelles</p>
+        <p class="section-subtitle">GPT-4 pour une prospection naturelle et personnalisée</p>
 
         <div class="ai-grid">
           {aiCapabilities.map((item) => (
@@ -402,26 +396,12 @@ const securityFeatures = [
         <h2 class="section-title">Points Différenciants</h2>
 
         <div class="differentiators-list">
-          <div class="differentiator">
-            <span class="diff-number">01</span>
-            <p>Système propriétaire de recherche d'emails avec validation DNS MX</p>
-          </div>
-          <div class="differentiator">
-            <span class="diff-number">02</span>
-            <p>Anti-détection avancée pour scraping LinkedIn avec simulation humaine</p>
-          </div>
-          <div class="differentiator">
-            <span class="diff-number">03</span>
-            <p>IA conversationnelle contextuelle avec prompt engineering dynamique</p>
-          </div>
-          <div class="differentiator">
-            <span class="diff-number">04</span>
-            <p>Architecture full-stack sans frameworks frontend (performance maximale)</p>
-          </div>
-          <div class="differentiator">
-            <span class="diff-number">05</span>
-            <p>Automation intelligente avec simulation comportement humain réaliste</p>
-          </div>
+          {differentiators.map((item, index) => (
+            <div class="differentiator">
+              <span class="diff-number">{String(index + 1).padStart(2, '0')}</span>
+              <p>{item}</p>
+            </div>
+          ))}
         </div>
       </div>
     </section>
@@ -429,8 +409,8 @@ const securityFeatures = [
     <!-- CTA -->
     <section class="project-cta">
       <div class="container">
-        <a href="https://echo-prospection.fr" class="cta-button" target="_blank" rel="noopener noreferrer">
-          <span>Visiter le site</span>
+        <a href="https://getspruce.io" class="cta-button" target="_blank" rel="noopener noreferrer">
+          <span>Visiter getspruce.io</span>
           <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
             <path d="M7 17L17 7M17 7H7M17 7V17"/>
           </svg>
@@ -450,7 +430,7 @@ const securityFeatures = [
 
   document.addEventListener('DOMContentLoaded', () => {
     const contentBlocks = document.querySelectorAll('.content-block');
-    let currentImage = 'vitrine';
+    let currentImage = 'import';
 
     function switchImage(newImage: string) {
       if (newImage === currentImage) return;
@@ -548,32 +528,55 @@ const securityFeatures = [
     max-width: 800px;
   }
 
+  .hero-logo-row {
+    margin-bottom: 24px;
+  }
+
+  .spruce-logo {
+    height: 44px;
+    width: auto;
+    opacity: 0.9;
+    filter: brightness(0) invert(1);
+  }
+
   .project-tag {
     display: inline-block;
     font-size: 12px;
-    color: var(--accent);
+    color: #57ff96;
     text-transform: uppercase;
     letter-spacing: 0.25em;
     margin-bottom: 20px;
     padding: 8px 16px;
-    border: 1px solid rgba(59, 130, 246, 0.3);
+    border: 1px solid rgba(87, 255, 150, 0.3);
     border-radius: 100px;
-    background: rgba(59, 130, 246, 0.05);
+    background: rgba(87, 255, 150, 0.05);
   }
 
   .project-title {
     font-size: clamp(48px, 8vw, 80px);
     font-weight: 700;
     letter-spacing: -0.04em;
-    margin: 0 0 24px;
+    margin: 0 0 16px;
     line-height: 1.1;
   }
 
   .project-subtitle {
-    font-size: 20px;
-    line-height: 1.6;
+    font-size: 22px;
+    line-height: 1.5;
+    color: var(--text-secondary);
+    margin: 0 0 8px;
+  }
+
+  .project-subtitle em {
+    color: #57ff96;
+    font-style: normal;
+  }
+
+  .project-tagline {
+    font-size: 16px;
     color: var(--text-secondary);
     margin: 0;
+    opacity: 0.7;
   }
 
   /* Scroll Sections */
@@ -653,7 +656,7 @@ const securityFeatures = [
   .content-label {
     display: inline-block;
     font-size: 11px;
-    color: var(--accent);
+    color: #57ff96;
     text-transform: uppercase;
     letter-spacing: 0.2em;
     margin-bottom: 16px;
@@ -712,7 +715,7 @@ const securityFeatures = [
   }
 
   .features-list li strong {
-    color: var(--accent);
+    color: #57ff96;
     margin-right: 8px;
   }
 
@@ -738,7 +741,7 @@ const securityFeatures = [
 
   .feature-card:hover {
     transform: translateY(-4px);
-    border-color: var(--accent);
+    border-color: #57ff96;
   }
 
   .feature-icon {
@@ -748,8 +751,8 @@ const securityFeatures = [
     width: 56px;
     height: 56px;
     margin-bottom: 16px;
-    color: var(--accent);
-    background: rgba(59, 130, 246, 0.1);
+    color: #57ff96;
+    background: rgba(87, 255, 150, 0.1);
     border-radius: 12px;
   }
 
@@ -766,19 +769,19 @@ const securityFeatures = [
     margin: 0;
   }
 
-  /* Algorithm Section */
+  /* Pipeline Section */
   .algorithm-section {
     padding: 100px 0;
   }
 
-  .algorithm-steps {
+  .pipeline-grid {
     display: grid;
     grid-template-columns: repeat(4, 1fr);
-    gap: 20px;
+    gap: 16px;
     margin-bottom: 48px;
   }
 
-  .algorithm-step {
+  .pipeline-step {
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -795,51 +798,22 @@ const securityFeatures = [
     display: flex;
     align-items: center;
     justify-content: center;
-    background: var(--accent);
-    color: white;
+    background: #1a4d2e;
+    color: #57ff96;
     border-radius: 50%;
     font-weight: 700;
+    font-size: 13px;
     margin-bottom: 16px;
   }
 
   .step-content h3 {
-    font-size: 16px;
+    font-size: 14px;
     font-weight: 600;
     margin: 0 0 8px;
   }
 
   .step-content p {
-    font-size: 14px;
-    color: var(--text-secondary);
-    margin: 0;
-  }
-
-  .algorithm-info {
-    max-width: 700px;
-    margin: 0 auto;
-    text-align: center;
-    padding: 32px;
-    background: var(--bg-secondary);
-    border: 1px solid var(--border);
-    border-radius: 16px;
-  }
-
-  .algorithm-info h3 {
-    font-size: 18px;
-    font-weight: 600;
-    margin: 0 0 16px;
-  }
-
-  .patterns {
-    font-family: 'JetBrains Mono', monospace;
-    font-size: 13px;
-    color: var(--accent);
-    margin: 0 0 20px;
-    word-spacing: 8px;
-  }
-
-  .result {
-    font-size: 15px;
+    font-size: 12px;
     color: var(--text-secondary);
     margin: 0;
   }
@@ -871,7 +845,7 @@ const securityFeatures = [
   }
 
   .check-icon {
-    color: #22c55e;
+    color: #57ff96;
     font-weight: bold;
   }
 
@@ -906,8 +880,8 @@ const securityFeatures = [
     justify-content: center;
     width: 36px;
     height: 36px;
-    color: var(--accent);
-    background: rgba(59, 130, 246, 0.1);
+    color: #57ff96;
+    background: rgba(87, 255, 150, 0.1);
     border-radius: 8px;
     flex-shrink: 0;
   }
@@ -959,7 +933,7 @@ const securityFeatures = [
 
   .tech-bubble:hover {
     transform: scale(1.08);
-    border-color: var(--accent);
+    border-color: #57ff96;
   }
 
   .tech-bubble img {
@@ -1010,8 +984,8 @@ const securityFeatures = [
     justify-content: center;
     width: 44px;
     height: 44px;
-    color: var(--accent);
-    background: rgba(59, 130, 246, 0.1);
+    color: #57ff96;
+    background: rgba(87, 255, 150, 0.1);
     border-radius: 10px;
     flex-shrink: 0;
   }
@@ -1066,14 +1040,14 @@ const securityFeatures = [
 
   .differentiator:hover {
     transform: translateX(8px);
-    border-color: var(--accent);
+    border-color: #57ff96;
   }
 
   .diff-number {
     font-family: 'JetBrains Mono', monospace;
     font-size: 24px;
     font-weight: 700;
-    color: var(--accent);
+    color: #57ff96;
   }
 
   .differentiator p {
@@ -1093,8 +1067,8 @@ const securityFeatures = [
     align-items: center;
     gap: 12px;
     padding: 18px 36px;
-    background: var(--text-primary);
-    color: var(--bg-primary);
+    background: #1a4d2e;
+    color: #57ff96;
     border-radius: 100px;
     font-size: 16px;
     font-weight: 500;
@@ -1102,7 +1076,7 @@ const securityFeatures = [
   }
 
   .cta-button:hover {
-    background: var(--accent);
+    background: #3a7a52;
     color: white;
     transform: translateY(-2px);
   }
@@ -1122,7 +1096,7 @@ const securityFeatures = [
     }
 
     .features-grid,
-    .algorithm-steps,
+    .pipeline-grid,
     .architecture-grid {
       grid-template-columns: repeat(2, 1fr);
     }
@@ -1135,7 +1109,7 @@ const securityFeatures = [
 
   @media (max-width: 768px) {
     .features-grid,
-    .algorithm-steps,
+    .pipeline-grid,
     .architecture-grid,
     .antidetection-grid,
     .ai-grid {
